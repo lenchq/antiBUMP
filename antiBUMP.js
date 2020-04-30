@@ -4,9 +4,8 @@
 // @version      1.1
 // @description  BUMP OUT OF HERE. removes all messages with "BUMP" an 2ch.
 // @author       dik & dok
-// @match        https://2ch.hk/*/res/*
-// @match        https://2ch.hk/*
-// @match        https://2ch.hk/b/res/219100436.html
+// @match        *://2ch.hk/*/res/*
+// @match        *://2ch.*/*
 // @grant        none
 // @downloadUrl  https://raw.githubusercontent.com/lenchik-lox/antiBUMP/master/antiBUMP.js
 // @updateUrl    https://raw.githubusercontent.com/lenchik-lox/antiBUMP/master/antiBUMP.js
