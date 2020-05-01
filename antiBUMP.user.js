@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         antiBUMP
 // @namespace    koq
-// @version      1.4
+// @version      1.4.1
 // @description  BUMP OUT OF HERE. removes all messages with "BUMP" on 2ch.
 // @author       dik&dok
 // @match        *://2ch.hk/*/res/*
@@ -34,7 +34,7 @@ function rand(min,max) {
 }
 if (!(getCookie("bb")=="true"|| getCookie("bb")=="false")) {
     setCookie("bb","true");
-    setCookie("bbst","false");
+    setCookie("bbst","бамп");
 }
 //menu...
 var jalil = ["бамп","бап","бам","бапм","bamp","bump","b*mp","бабамп","бумп","бамп!","бамп?","бымп","бомп","бамж","бвмп","bmpp","бюмп","бамплю","ббмп","баамп","бамп!!","бамп!!!","bunp","блымп",/*"",""*/];
