@@ -41,9 +41,7 @@ var jalil = ["бамп","бап","бам","бапм","bamp","bump","b*mp","ба�
 //window.ss = jalil;
 var dakk = jalil[rand(0,jalil.length-1)];
 dakk = dakk[0].toUpperCase()+dakk.substring(1,dakk.length)
-// jalil.push("1","2","3","4","5","6","7","8","9","0");
-var ctext = getCookie("bbst")!=undefined ? decodeURIComponent(getCookie("bbst")) : "бамп";
-var butt = document.createElement("button");
+jalil.push("1","2","3","4","5","6","7","8","9","0","a","а");
 var t = document.createElement("span");
 var m = document.createElement("span");
 var dook = getCookie("bb") === "true";
@@ -90,10 +88,10 @@ if (dook) {
             var lbumps = them_cum[lublu_karandashi].innerText.toLowerCase().lastIndexOf(jalil[xXx_nagibator666_xXx])
             if (bumps>=0 && (them_cum[lublu_karandashi].innerText.length<6||them_cum[lublu_karandashi].innerText.toLowerCase().indexOf(">>")>=0&&them_cum[lublu_karandashi].innerText.length<8||lbumps<6))
             {
-                them_cum[lublu_karandashi].style.display = 'none';
+                if (!mode) {them_cum[lublu_karandashi].style.display = 'none';} else if(mode) {them_cum[lublu_karandashi].parentElement.parentElement.remove();continue;}
                 try{try
                 {
-                    post[lublu_karandashi+d].innerText = ctext;
+                    post[lublu_karandashi+d].innerText = "бамп";
                     console.log("BUMP DETECTED AT "+lublu_karandashi);
                 }
                     catch(e)
@@ -142,30 +140,22 @@ function kok() {
 //m.className = s.className = "koqq";
 
 t.innerHTML = dakk;
-// cbox.type = "checkbox";
-cbox.type = "text";
+cbox.type = "checkbox";
 cbox.id = "abcbox";
-cbox.style.cssText = "text-align:center;margin:.21em;border-radius:4px; background:inherit;border:none;border-bottom:1px solid gray;font-size:18px";
-butt.id = "abbutton";
-document.styleSheets[0].addRule("#abcbox:focus","outline:none;border-bottom:1px solid black");document.styleSheets[0].addRule("#abbutton:focus","outline:none;");
-butt.innerText ="Сохранить";
-butt.style = "font-size:1.01em;border-radius:15px;border:1px solid gray;position:inline-block;display:inline-block;top: 8em;position: absolute;display: inline-block;left:4.5em;";
+cbox.style.cssText = "margin:.21em";
 sett.id = "absett";
-p.innerHTML = "Заменять 'Аноним' на:";
-cbox.value = typeof(ctext)!=undefined?ctext:"бамп"
-p.style.cssText = "padding:.3em;color:black;"
+p.innerHTML = "Полное удаление сообщений с 'бамп'";
+p.style.cssText = "padding:.3em"
 lab.innerHTML = "Настройки";
-cbox.maxlength = ""
 icon.src = "https://i.imgur.com/hsyzbF4.png";
-sett.style.cssText = "padding:3px;;user-select:none;;transition:.2s ease-in-out;position:fixed;background:var(--theme_default_postbg);width:15em;height:10em;opacity:0;visibility:hidden;left:40em; top:6em;border-radius:7px; border:1px solid rgba(0,0,0,.5);z-index:100;";
+sett.style.cssText = ";transition:.2s ease-in-out;position:fixed;background:var(--theme_default_postbg);width:15em;height:10em;opacity:1;left:40em; top:6em;border-radius:7px; border:1px solid rgba(0,0,0,.5);z-index:100;";
 icon.style = ";transition:.3s ease-in-out;position:relative;width:1em;height:1em;vertical-align:middle;display:inline-block;margin:.6em;cursor:pointer;";
-p.id = lab.id = "abtext";
-lab.style = "text-align:center; position:relative; display:inline-block; left:4.1em; color:black;font-size:17px";
-icon.onclick = menu; function menu() {var kak = sett.style.opacity == "1" ? "rotate(-60deg)" : "rotate(0deg)";sett.style.visibility = "visible";var ksk = sett.style.opacity == "1" ? "hidden" : "visible";var kok = sett.style.opacity == "1" ? "0" : "1"; sett.style.opacity = kok; icon.style.transform=kak; setTimeout(function() {sett.style.visibility = ksk},205)};
+p.id = lab.id = "abtext"
+lab.style = "text-align:center; position:relative; display:inline-block; left:5.1em";
+icon.onclick = function() {var kak = sett.style.opacity == "1" ? "rotate(-60deg)" : "rotate(0deg)";sett.style.visibility = "visible";var ksk = sett.style.opacity == "1" ? "hidden" : "visible";var kok = sett.style.opacity == "1" ? "0" : "1"; sett.style.opacity = kok; icon.style.transform=kak; setTimeout(function() {sett.style.visibility = ksk},205)};
 t.style.cssText += ";transition:.2s ease-in-out;left:0px;position:relative;"+d1k;
 m.style.cssText += ";transition:.2s ease-in-out;border-radius:10px;vertical-align:middle;width:32px;height:16px;; position:relative;display:inline-block; padding:2px; cursor:pointer;"+d3k;
 s.style.cssText += ";transition:.2s ease-in-out;border-radius:100%;vertical-align:middle;width:10px;height:10px;background:#EEEEEE;position:relative;display:inline-block;margin:-1px;cursor:pointer;"+d2k;
-if (!dook) {icon.style.visibility = "hidden"}
 s.onclick = m.onclick = kak
 function kak() {
     if (getCookie("bb")=="true") {
@@ -188,11 +178,14 @@ function kak() {
     }
     setInterval(function() {location.reload()},250);
 }
-butt.onclick = function() {
-    if (cbox.value != ctext) {
-         setCookie("bbst",encodeURIComponent(cbox.value))
+cbox["onchange"] = function() {
+    var cok = getCookie("bbst");
+    if (cok== "true") {
+        setCookie("bbst","false");console.log("FAQ");
     }
-    menu();
+    else if (cok == "false") {
+        setCookie("bbst","true");
+    }
 }
 var koqs = document.querySelectorAll('span.adminbar__cat')[1];
 
@@ -201,8 +194,7 @@ koqs.appendChild(s);
 koqs.appendChild(t);
 koqs.appendChild(icon);
 document.querySelector('header').appendChild(sett);
-sett.appendChild(lab);sett.appendChild(document.createElement('br'));
-sett.appendChild(p);sett.appendChild(document.createElement('br'));
-sett.appendChild(cbox);sett.appendChild(document.createElement('br'));sett.appendChild(document.createElement('br'));sett.appendChild(document.createElement('br'));sett.appendChild(document.createElement('br'));
-sett.appendChild(butt);
+sett.appendChild(lab); sett.appendChild(document.createElement('br'));
+sett.appendChild(cbox);
+sett.appendChild(p);
 
