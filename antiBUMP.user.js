@@ -37,7 +37,7 @@ if (!(getCookie("bb")=="true"|| getCookie("bb")=="false")) {
     setCookie("bbst","false");
 }
 //menu...
-var jalil = ["бамп","бап","бам","бапм","bamp","bump","b*mp","бабамп","бумп","бамп!","бамп?","бымп","бомп","бамж","бвмп","bmpp","бюмп","бамплю","ббмп","баамп","бамп!!","бамп!!!","bunp","блымп",/*"",""*/];
+var jalil = ["бамп","бап","бам","бапм","bamp","bump","b*mp","бабамп","бумп","бамп!","бамп?","бымп","бомп","бамж","бвмп","bmpp","бюмп","бамплю","ббмп","баамп","бамп!!","бамп!!!","bunp","блымп","бамп.",/*""*/];
 //window.ss = jalil;
 var dakk = jalil[rand(0,jalil.length-1)];
 dakk = dakk[0].toUpperCase()+dakk.substring(1,dakk.length)
