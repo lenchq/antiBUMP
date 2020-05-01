@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         antiBUMP
 // @namespace    koq
-// @version      1.3
-// @description  BUMP OUT OF HERE. removes all messages with "BUMP" an 2ch.
+// @version      1.3.1
+// @description  BUMP OUT OF HERE. removes all messages with "BUMP" on 2ch.
 // @author       dik&dok
 // @match        *://2ch.hk/*/res/*
 // @match        *://2ch.*/*
@@ -92,10 +92,17 @@ for (var ksux = 0;ksux<document.querySelectorAll('.spoiler').length;ksux++) {
 function kok() {
     if (kek[parseInt(this.id.substring(2,this.id.length))] == true) {
         this.style += ";cursor:pointer;background:none;color:var(--theme_default_text);";
+        this.onmouseover = this.onmouseout = undefined;
         kek[parseInt(this.id.substring(2,this.id.length))] = false;
     }
     else {
         this.style += ";cursor:pointer;background:var(--theme_default_spoiler);color:var(--theme_default_spoiler);user-select:none;";
+        this.onmouseover = function() {
+            this.style = ";cursor:pointer;background:none;color:var(--theme_default_text);";
+        }
+        this.onmouseout = function() {
+            this.style = ";cursor:pointer;background:var(--theme_default_spoiler);color:var(--theme_default_spoiler);";
+        }
         //this.onmouseover=";cursor:pointer;background:none;color:var(--theme_default_text);";
         kek[parseInt(this.id.substring(2,this.id.length))] = true;
     }
@@ -126,7 +133,7 @@ function kak() {
         t.style ="text-decoration:line-through";
         setCookie("bb","true");
     }
-    setInterval(function() {location.reload()},200);
+    setInterval(function() {location.reload()},250);
 }
 var koqs = document.querySelectorAll('span.adminbar__cat')[1];
 
