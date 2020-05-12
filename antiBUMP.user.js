@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         antiBUMP
 // @namespace    koq
-// @version      1.4.1
+// @version      1.5
 // @description  BUMP OUT OF HERE. removes all messages with "BUMP" on 2ch.
 // @author       dik&dok
 // @match        *://2ch.hk/*/res/*
@@ -37,7 +37,7 @@ if (!(getCookie("bb")=="true"|| getCookie("bb")=="false")) {
     setCookie("bbst","false");
 }
 //menu...
-var jalil = ["бамп","бап","бам","бапм","bamp","bump","b*mp","бабамп","бумп","бамп!","бамп?","бымп","бомп","бамж","бвмп","bmpp","бюмп","бамплю","ббмп","баамп","бамп!!","бамп!!!","bunp","блымп","бамп.","бемп"];
+var jalil = ["бамп","бап","бам","бапм","bamp","bump","b*mp","бабамп","бумп","бамп!","бамп?","бымп","бомп","бамж","бвмп","bmpp","бюмп","бамплю","ббмп","баамп","бамп!!","бамп!!!","bunp","блымп","бамп.","бемп", "roll","ролл"];
 //window.ss = jalil;
 var dakk = jalil[rand(0,jalil.length-1)];
 dakk = dakk[0].toUpperCase()+dakk.substring(1,dakk.length)
@@ -50,7 +50,9 @@ var dook = getCookie("bb") === "true";
 var s = document.createElement("span");
 var cbox = document.createElement("input");
 var sett = document.createElement("div");
+var nsfw = document.createElement('a');
 var lab = document.createElement("label");
+var nst = document.createElement('style');
 var icon = document.createElement("img");
 var p = document.createElement('label');
 var d0k,d1k,d2k,d3k;
@@ -152,7 +154,15 @@ butt.innerText ="Сохранить";
 butt.style = "font-size:1.01em;border-radius:15px;border:1px solid gray;position:inline-block;display:inline-block;top: 8em;position: absolute;display: inline-block;left:4.5em;";
 sett.id = "absett";
 p.innerHTML = "Заменять 'Аноним' на:";
-cbox.value = typeof(ctext)!=undefined?ctext:"бамп"
+cbox.value = typeof(ctext)!=undefined?ctext:"бамп";
+
+nsfw.id = "nsfw";
+nsfw.innerHTML = "NSFW";
+//nsfw.href = "#";
+nsfw.style = "margin-left:8px; position:relative; display:inline-block; user-select:none;vertical-align:middle;";
+
+
+
 p.style.cssText = "padding:.3em;color:black;"
 lab.innerHTML = "Настройки";
 cbox.maxlength = ""
@@ -194,12 +204,31 @@ butt.onclick = function() {
     }
     menu();
 }
+window.nsfwFunc = function() {
+    var nst = document.createElement('style');
+    nst.id = "nsfw-style";
+    nst.type = "text/css";
+    nst.innerHTML = ".post__file-preview{opacity:0.05}.post__file-preview:hover{opacity:1}";
+    var sty = document.head.querySelector('#nsfw-style');
+    if (!window.Store.get('styling.nsfw')) {
+        document.head.appendChild(nst);
+        window.Store.set('styling.nsfw',true);console.log("NSFW ON");
+    }
+    else {
+        try {sty.remove();}catch(e){document.head.appendChild(nst);};
+        window.Store.set('styling.nsfw',false);console.log("NSFW OFF");
+    }
+}
+nsfw.onclick = window.nsfwFunc;
+
 var koqs = document.querySelectorAll('span.adminbar__cat')[1];
 
 koqs.appendChild(m);
 koqs.appendChild(s);
 koqs.appendChild(t);
+
 koqs.appendChild(icon);
+koqs.appendChild(nsfw);
 document.querySelector('header').appendChild(sett);
 sett.appendChild(lab);sett.appendChild(document.createElement('br'));
 sett.appendChild(p);sett.appendChild(document.createElement('br'));
