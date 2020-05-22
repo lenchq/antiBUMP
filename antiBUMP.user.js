@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         antiBUMP
 // @namespace    koq
-// @version      1.5
+// @version      1.6
 // @description  BUMP OUT OF HERE. removes all messages with "BUMP" on 2ch.
 // @author       dik&dok
 // @match        *://2ch.hk/*/res/*
@@ -17,6 +17,21 @@
 
 
 'use strict';
+function reve(str) {
+    var s = str.split("");
+    var d = s.reverse();
+    var v = d.join("");
+    return v;
+}
+window.torgb = function(hex) {
+    var d = 0;
+    if (typeof(hex) != "string") {throw "hex must be a string";}
+    if (hex.indexOf("#")>=0) {d = 1;}
+    var r = hex[1+d] + hex[2+d];
+    var g = hex[2+d] + hex[3+d];
+    var b = hex[4+d] + hex[5+d];
+    return "rgb("+parseInt(r,16).toString()+","+parseInt(g,16).toString()+","+parseInt(b,16).toString()+")";
+}
 function getCookie(name) {
     var matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
     return matches ? decodeURIComponent(matches[1]) : undefined;
@@ -40,6 +55,7 @@ if (!(getCookie("bb")=="true"|| getCookie("bb")=="false")) {
 var jalil = ["бамп","бап","бам","бапм","bamp","bump","b*mp","бабамп","бумп","бамп!","бамп?","бымп","бомп","бамж","бвмп","bmpp","бюмп","бамплю","ббмп","баамп","бамп!!","бамп!!!","bunp","блымп","бамп.","бемп", "roll","ролл"];
 //window.ss = jalil;
 var dakk = jalil[rand(0,jalil.length-1)];
+var style = document.styleSheets[0];
 dakk = dakk[0].toUpperCase()+dakk.substring(1,dakk.length)
 // jalil.push("1","2","3","4","5","6","7","8","9","0");
 var ctext = getCookie("bbst")!=undefined ? decodeURIComponent(getCookie("bbst")) : "бамп";
@@ -55,6 +71,9 @@ var lab = document.createElement("label");
 var nst = document.createElement('style');
 var icon = document.createElement("img");
 var p = document.createElement('label');
+var color = "";
+style.addRule(".post_type_oppost","border-radius:3px");
+var bmps = 0;
 var d0k,d1k,d2k,d3k;
 d0k = d1k = "";
 if (dook) {
@@ -73,12 +92,40 @@ if (dook) {
         }*/
     var /*let*/them_cum = document.getElementsByClassName('post__message');
     var post = document.querySelectorAll('.post__anon');
+    var id = document.querySelectorAll('.postbtn-reply-href');
     var d = 0;
     var mode = (getCookie("bbst") == "true");
     if (mode) {cbox.checked = "true";}
 
     for (var lublu_karandashi = 0; lublu_karandashi<them_cum.length; lublu_karandashi++) {
         //if (them_cum[lublu_karandashi].innerText.toLowerCase() == ("бамп" || "bump" || "/bump!?/" || "bamp" || "бабамп" || "бымп" || "бумп")){
+        var revid = reve(id[lublu_karandashi].innerText);
+        var k = 1;
+        for (var l = 0; l < 10; l++) {
+            if ( revid[l] == revid[l+1]) {k++; continue;}
+            else {break;}
+        }
+        if (k > 1) {
+        if (k == 2) {
+            color = "#FE1111";
+        }
+        else if (k == 3) {
+            color = "#0FC0FC";
+        }
+        else if (k == 4) {
+            color = "#ED009A";
+        }
+        else if (k == 5) {
+            color = "#FFFF15";
+        }
+        else if (k == 6) {
+            color = "#63FF15";
+        }
+        them_cum[lublu_karandashi].parentElement.parentElement.children[0].style.borderLeft = k+"px solid "+color;
+        }
+            //console.log("kok" + revid);
+
+        //d--;
         for (var xXx_nagibator666_xXx = 0; xXx_nagibator666_xXx<jalil.length;xXx_nagibator666_xXx++) {
             try
             {
@@ -93,6 +140,7 @@ if (dook) {
             if (bumps>=0 && (them_cum[lublu_karandashi].innerText.length<6||them_cum[lublu_karandashi].innerText.toLowerCase().indexOf(">>")>=0&&them_cum[lublu_karandashi].innerText.length<8||lbumps<6))
             {
                 them_cum[lublu_karandashi].style.display = 'none';
+                bmps++;
                 try{try
                 {
                     post[lublu_karandashi+d].innerText = ctext;
@@ -174,7 +222,7 @@ lab.style = "text-align:center; position:relative; display:inline-block; left:4.
 icon.onclick = menu; function menu() {var kak = sett.style.opacity == "1" ? "rotate(-60deg)" : "rotate(0deg)";sett.style.visibility = "visible";var ksk = sett.style.opacity == "1" ? "hidden" : "visible";var kok = sett.style.opacity == "1" ? "0" : "1"; sett.style.opacity = kok; icon.style.transform=kak; setTimeout(function() {sett.style.visibility = ksk},205)};
 t.style.cssText += ";transition:.2s ease-in-out;left:0px;position:relative;"+d1k;
 m.style.cssText += ";transition:.2s ease-in-out;border-radius:10px;vertical-align:middle;width:32px;height:16px;; position:relative;display:inline-block; padding:2px; cursor:pointer;"+d3k;
-s.style.cssText += ";transition:.2s ease-in-out;border-radius:100%;vertical-align:middle;width:10px;height:10px;background:#EEEEEE;position:relative;display:inline-block;margin:-1px;cursor:pointer;"+d2k;
+s.style.cssText += ";transition:.2s ease-in-out;border-radius:100%;vertical-align:middle;width:10px;height:10px;background:var(--theme_default_bg);position:relative;display:inline-block;margin:-1px;cursor:pointer;"+d2k;
 if (!dook) {icon.style.visibility = "hidden"}
 s.onclick = m.onclick = kak
 function kak() {
@@ -182,7 +230,7 @@ function kak() {
         /*s.style += ";transition:.2s ease-in-out;border-radius:100%;vertical-align:middle;width:10px;height:10px;background:#EEEEEE;position:relative;display:inline-block;margin:-1px;cursor:pointer;left:-14px;";
         m.style += ";transition:.2s ease-in-out;border-radius:10px;vertical-align:middle;width:32px;height:16px;; position:relative;display:inline-block; padding:2px; cursor:pointer;background:#FF972F;";
         t.style ="text-decoration:line-through";*/
-        s.style += ";transition:.2s ease-in-out;border-radius:100%;vertical-align:middle;width:10px;height:10px;background:#EEEEEE;position:relative;display:inline-block;margin:-1px;cursor:pointer;left:-28px;";
+        s.style += ";transition:.2s ease-in-out;border-radius:100%;vertical-align:middle;width:10px;height:10px;background:var(--theme_default_bg);position:relative;display:inline-block;margin:-1px;cursor:pointer;left:-28px;";
         m.style += ";transition:.2s ease-in-out;border-radius:10px;vertical-align:middle;width:32px;height:16px;; position:relative;display:inline-block; padding:2px; cursor:pointer;background:#9D9D9D;";
         t.style = "text-decoration:none";
         setCookie("bb","false");
@@ -191,7 +239,7 @@ function kak() {
         /*s.style += ";transition:.2s ease-in-out;border-radius:100%;vertical-align:middle;width:10px;height:10px;background:#EEEEEE;position:relative;display:inline-block;margin:-1px;cursor:pointer;left:-28px;";
         m.style += ";transition:.2s ease-in-out;border-radius:10px;vertical-align:middle;width:32px;height:16px;; position:relative;display:inline-block; padding:2px; cursor:pointer;background:#9D9D9D;";
         t.style = "text-decoration:none";*/
-        s.style += ";transition:.2s ease-in-out;border-radius:100%;vertical-align:middle;width:10px;height:10px;background:#EEEEEE;position:relative;display:inline-block;margin:-1px;cursor:pointer;left:-14px;";
+        s.style += ";transition:.2s ease-in-out;border-radius:100%;vertical-align:middle;width:10px;height:10px;background:var(--theme_default_bg);position:relative;display:inline-block;margin:-1px;cursor:pointer;left:-12px;";
         m.style += ";transition:.2s ease-in-out;border-radius:10px;vertical-align:middle;width:32px;height:16px;; position:relative;display:inline-block; padding:2px; cursor:pointer;background:#FF972F;";
         t.style ="text-decoration:line-through";
         setCookie("bb","true");
@@ -234,4 +282,5 @@ sett.appendChild(lab);sett.appendChild(document.createElement('br'));
 sett.appendChild(p);sett.appendChild(document.createElement('br'));
 sett.appendChild(cbox);sett.appendChild(document.createElement('br'));sett.appendChild(document.createElement('br'));sett.appendChild(document.createElement('br'));sett.appendChild(document.createElement('br'));
 sett.appendChild(butt);
+$alert("Антибамп скрыл "+ bmps+" бампов");
 
