@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         antiBUMP
 // @namespace    koq
-// @version      1.7
+// @version      1.7.1
 // @description  BUMP OUT OF HERE. removes all messages with "BUMP" on 2ch.
 // @author       dik&dok
 // @match        *://2ch.hk/*/res/*
@@ -75,7 +75,8 @@ var p = document.createElement('label');
 var sep = document.createElement('separator');
 var color = "";
 style.addRule(".post_type_oppost","border-radius:3px");
-style.addRule(".kok","background-color:var(--theme_default_postbghighlight);");
+//style.addRule(".kok","background-color:var(--theme_default_postbghighlight);");
+style.addRule("@keyframes kzk","0%{background-color:var(--theme_default_postbghighlight)}72%{background-color:var(--theme_default_postbghighlight)}100%{background-color:var(--theme_default_postbg)}");
 var bmps = 0;
 var d0k,d1k,d2k,d3k;
 window.cid = [];
@@ -213,11 +214,11 @@ t.innerHTML = dakk;
 // cbox.type = "checkbox";
 cbox.type = "text";
 cbox.id = "abcbox";
-cbox.style.cssText = "text-align:center;margin:.21em;border-radius:4px; background:inherit;border:none;border-bottom:1px solid gray;font-size:18px";
+cbox.style.cssText = "text-align:center;margin:.21em;border-radius:4px; background:inherit;border:none;border-bottom:1px solid gray;font-size:18px;color:inherit;";
 butt.id = "abbutton";
-document.styleSheets[0].addRule("#abcbox:focus","outline:none;border-bottom:1px solid black");document.styleSheets[0].addRule("#abbutton:focus","outline:none;");
+style.addRule("#abcbox:focus","outline:none;border-bottom:1px solid black");document.styleSheets[0].addRule("#abbutton:focus","outline:none;");
 butt.innerText ="Сохранить";
-butt.style = "font-size:1.01em;border-radius:15px;border:1px solid gray;position:inline-block;display:inline-block;top: 8em;position: absolute;display: inline-block;left:4.5em;";
+butt.style = "font-size:1.01em;border-radius:15px;border:1px solid gray;position:inline-block;display:inline-block;top: 8em;position: absolute;display: inline-block;left:4.5em;color:inherit;background:inherit;";
 sett.id = "absett";
 p.innerHTML = "Заменять 'Аноним' на:";
 cbox.value = typeof(ctext)!=undefined?ctext:"бамп";
@@ -232,14 +233,14 @@ rndd.id = "rnd";
 rndd.onclick = randomPost;
 rndd.innerText = "Случайный пост";
 
-p.style.cssText = "padding:.3em;color:black;"
+p.style.cssText = "padding:.3em;"
 lab.innerHTML = "Настройки";
 cbox.maxlength = ""
 icon.src = "https://i.imgur.com/hsyzbF4.png";
-sett.style.cssText = "padding:3px;;user-select:none;;transition:.2s ease-in-out;position:fixed;background:var(--theme_default_postbg);width:15em;height:10em;opacity:0;visibility:hidden;left:40em; top:6em;border-radius:7px; border:1px solid rgba(0,0,0,.5);z-index:100;";
+sett.style.cssText = "padding:3px;;user-select:none;;transition:.2s ease-in-out;position:fixed;background:var(--theme_default_postbg);width:15em;height:10em;opacity:0;visibility:hidden;left:40em; top:6em;border-radius:7px; border:1px solid rgba(0,0,0,.5);z-index:100;color:var(--theme_default_text);";
 icon.style = ";transition:.3s ease-in-out;position:relative;width:1em;height:1em;vertical-align:middle;display:inline-block;margin-left:.6em;cursor:pointer;";
 p.id = lab.id = "abtext";
-lab.style = "text-align:center; position:relative; display:inline-block; left:4.1em; color:black;font-size:17px";
+lab.style = "text-align:center; position:relative; display:inline-block; left:4.1em;font-size:17px";
 icon.onclick = menu; function menu() {var kak = sett.style.opacity == "1" ? "rotate(-60deg)" : "rotate(0deg)";sett.style.visibility = "visible";var ksk = sett.style.opacity == "1" ? "hidden" : "visible";var kok = sett.style.opacity == "1" ? "0" : "1"; sett.style.opacity = kok; icon.style.transform=kak; setTimeout(function() {sett.style.visibility = ksk},205)};
 t.style.cssText += ";transition:.2s ease-in-out;left:0px;position:relative;"+d1k;
 m.style.cssText += ";transition:.2s ease-in-out;border-radius:10px;vertical-align:middle;width:32px;height:16px;; position:relative;display:inline-block; padding:2px; cursor:pointer;"+d3k;
@@ -290,7 +291,7 @@ window.nsfwFunc = function() {
 }
 nsfw.onclick = window.nsfwFunc;
 function randomPost() {
-    try {window.cid[window.lastn].parentElement.parentElement.parentElement.className = window.scl;} catch(E){/*console.log(E);*/}
+    //try {window.cid[window.lastn].parentElement.parentElement.parentElement.className = window.scl;} catch(E){/*console.log(E);*/}
     var id = document.querySelectorAll('.post__reflink');
     if (window.cid.length < 1) {
         for (var i = 0; i < id.length;i++) {
@@ -300,18 +301,19 @@ function randomPost() {
         }
     }
     var c = rand(1,window.cid.length-1);
-    var s = window.location.href
-    //if (s != window.location.href) {
-        s = window.startHref +"#"+ window.cid[c].id;
-        window.location.href = s;
-    //}
-    console.log(s);
+        //var s = window.location.href
+        //s = window.startHref +"#"+ window.cid[c].id;
+        //window.location.href = s;
+    //window.cid[c].parentElement.parentElement.parentElement.scrollIntoView();
+    window.scrollTo(0,(window.cid[c].parentElement.parentElement.parentElement.offsetTop-window.screen.height/2)+250)
     window.scl = window.cid[c].parentElement.parentElement.parentElement.className;
-    window.cid[c].parentElement.parentElement.parentElement.className += " kok";
-    //window.lastRnd = window.cid[c].parentElemeent.parentElement.parentElement;
+    //window.cid[c].parentElement.parentElement.parentElement.className += " kok";
+    window.cid[c].parentElement.parentElement.parentElement.style.animation = "kzk 3s";
     window.lastn = c;
 }
 var koqs = document.querySelectorAll('span.adminbar__cat')[1];
+/*var sepp = document.createElement('separator');
+sepp.innerText = " |";*/
 
 koqs.appendChild(m);
 koqs.appendChild(s);
@@ -325,6 +327,7 @@ sett.appendChild(lab);sett.appendChild(document.createElement('br'));
 sett.appendChild(p);sett.appendChild(document.createElement('br'));
 sett.appendChild(cbox);sett.appendChild(document.createElement('br'));sett.appendChild(document.createElement('br'));sett.appendChild(document.createElement('br'));sett.appendChild(document.createElement('br'));
 sett.appendChild(butt);
+//nsfw.before(sepp);
 nsfw.after(sep);
 sep.after(rndd);
 $alert("Антибамп скрыл "+ bmps+" бампов");
