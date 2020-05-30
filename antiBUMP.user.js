@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         antiBUMP
 // @namespace    koq
-// @version      1.7.1
+// @version      1.7.2
 // @description  BUMP OUT OF HERE. removes all messages with "BUMP" on 2ch.
 // @author       dik&dok
 // @match        *://2ch.hk/*/res/*
@@ -232,6 +232,7 @@ nsfw.style = "margin-left:8px; position:relative; display:inline-block; user-sel
 rndd.id = "rnd";
 rndd.onclick = randomPost;
 rndd.innerText = "Случайный пост";
+rndd.style = "user-select:none";
 
 p.style.cssText = "padding:.3em;"
 lab.innerHTML = "Настройки";
@@ -330,5 +331,9 @@ sett.appendChild(butt);
 //nsfw.before(sepp);
 nsfw.after(sep);
 sep.after(rndd);
-$alert("Антибамп скрыл "+ bmps+" бампов");
+var spr = "";
+var lch = parseInt(bmps.toString()[bmps.toString.length-1]);
+if (lch>1 && lch<5) {spr = "а";}
+else if (lch>5||lch==0) {spr="ов";}
+window.$alert("Антибамп скрыл "+ bmps+" бамп"+spr);
 
