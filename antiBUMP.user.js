@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         antiBUMP
 // @namespace    koq
-// @version      1.9
+// @version      1.9.1
 // @description  BUMP OUT OF HERE. removes all messages with "BUMP" on 2ch.
 // @author       dik&dok
 // @match        *://2ch.hk/*/res/*
@@ -106,15 +106,15 @@ if (!(getCookie("bb")=="true"|| getCookie("bb")=="false")) {
     setCookie("bb","true");
     setCookie("bbst","bump");
 }
-if (JSON.parse(getCookie('antiplashque'))) {
+try{if (JSON.parse(getCookie('antiplashque'))) {
     try {$q('section.mmm').forEach((el) => {el.remove()})} catch(e) {$q('section.mmm').remove();}
     try {$q('div#plashque').remove();} catch(e){}
     setCookie('plashque','1');
     setCookie('antiplashque','true');
-}
-if (JSON.parse(getCookie('adskbn'))) {
+}}catch(e){setCookie('antiplashque','false')};
+try{if (JSON.parse(getCookie('adskbn'))) {
     $('div.logo').hide();
-}
+}}catch(e){setCookie('adskbn','false')}
 var oldtitle = $q('#title').innerText;
 var newtitle = getCookie('customtitle');
 var title = document.head.querySelector('title');
