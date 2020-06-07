@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         antiBUMP
 // @namespace    koq
-// @version      1.8
+// @version      1.9
 // @description  BUMP OUT OF HERE. removes all messages with "BUMP" on 2ch.
 // @author       dik&dok
 // @match        *://2ch.hk/*/res/*
@@ -14,17 +14,19 @@
 // @grant        none
 // @downloadUrl  https://raw.githubusercontent.com/lenchik-lox/antiBUMP/master/antiBUMP.user.js
 // @updateUrl    https://raw.githubusercontent.com/lenchik-lox/antiBUMP/master/antiBUMP.user.js
+// @resource     kok.png  https://i.imgur.com/EXSZdp9.png
 // ==/UserScript==
 
 
 'use strict';
-function delCookie(key) {
-    document.cookie = key + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
+function delCookie(key,path) {
+    if (typeof(path)=="string") {path = "/"+path+"/";}
+    document.cookie = key + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT'+";"+path;
     return !getCookie(key);
 }
-var getVarName = function tmp(){
-    var n = /getVarName\(([^)]+?)\)/.exec(tmp.caller !== null ? tmp.caller.toString() : '');
-    return n !== null ? n[1] : false;
+String.prototype.cut = function(num) {
+    if (typeof(num)!="number"){throw("string needed")}
+    return this.reve().substring(num).reve();
 }
 function listToArray(str) {
     var item = "";
@@ -40,6 +42,17 @@ function listToArray(str) {
     }
     return array;
 }
+function getBoard() {
+    var tett = "";
+    for (var i = 0; true; i++) {
+        var tit = document.head.querySelector('title').innerText;
+        if (tit[i] == '-') {break;}
+        else {tett += tit[i]}
+    }
+    //return tett.cut(2);
+    return tett.reve().cut(1).substring(1).trim().substr(1,1);
+}
+window.getBoard = getBoard;
 window.lta = listToArray;
 //просто функция
 function reve(str) {
@@ -68,13 +81,14 @@ function getCookie(name) {
     var matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
     return matches ? decodeURIComponent(matches[1]) : undefined;
 }
-function setCookie(key, value, days) {
+function setCookie(key, value, days, path) {
     if(days==undefined)
     {days=7}
     var date=new Date();
+    var pat = typeof(path)=="string" ? "path=/"+path.toString() : "path=/";
     date.setTime(date.getTime() + days*24*60*60*1000);
     var expires = '; expires=' + date.toGMTString();
-    document.cookie = key + '=' + value + expires + '; path=/';
+    document.cookie = key + '=' + value + expires + '; '+pat;
 }
 function rand(min,max) {
     return Math.floor(min + Math.random() * (max + 1 - min));
@@ -84,6 +98,9 @@ function $cr(el) {
 }
 function $q(el) {
     return document.querySelector(el);
+}
+function $qa(el) {
+    return document.querySelectorAll(el);
 }
 if (!(getCookie("bb")=="true"|| getCookie("bb")=="false")) {
     setCookie("bb","true");
@@ -95,6 +112,27 @@ if (JSON.parse(getCookie('antiplashque'))) {
     setCookie('plashque','1');
     setCookie('antiplashque','true');
 }
+if (JSON.parse(getCookie('adskbn'))) {
+    $('div.logo').hide();
+}
+var oldtitle = $q('#title').innerText;
+var newtitle = getCookie('customtitle');
+var title = document.head.querySelector('title');
+if (typeof(newtitle)!="undefined" && newtitle.length>0) {
+    $q('#title').innerText = getCookie('customtitle');
+    if (location.href.indexOf('res')==-1)
+    title.innerText = '/'+getBoard()+'/ - '+newtitle;
+}
+else {
+    if (location.href.indexOf('res')==-1)
+    title.innerText = '/'+getBoard()+'/ - '+oldtitle;
+}
+
+
+window.$q = $q;
+window.$qa = $qa;
+window.$cr = $cr;
+window.rand = rand;
 //menu...
 var jalil = ["бамп","бап","бам","бапм","bamp","bump","b*mp","бабамп","бумп","бамп!","бамп?","бымп","бомп","бамж","бвмп","bmpp","бюмп","бамплю","ббмп","баамп","бамп!!","бамп!!!","bunp","блымп","бамп.","бемп", "roll","ролл"];
 //window.ss = jalil;
@@ -110,14 +148,18 @@ var dook = getCookie("bb") === "true";
 var s = $cr("span");
 var cbox = $cr("input");
 var cmbbox = $cr('select');
+var editinp = $cr('input');
+var antidoskbnner = $cr('input');
 var sett = $cr("div");
 var nsfw = $cr('a');
 var rndd = $cr('a');
+var edit = $cr('img');
 var glowrand = $cr('input')
 var lab = $cr("label");
 var nst = $cr('style');
 var icon = $cr("img");
 var p = $cr('label');
+var editmode = false;
 var antiplashque = $cr('input');
 var sep = $cr('separator');
 window.s_mat = listToArray('6ля, 6лядь, 6лять, b3ъeб, cock, cunt, e6aль, ebal, eblan, eбaл, eбaть, eбyч, eбать, eбёт, eблантий, fuck, fucker, fucking, xyёв, xyй, xyя, xуе,xуй, xую, zaeb, zaebal, zaebali, zaebat, архипиздрит, ахуел, ахуеть, бздение, бздеть, бздех, бздецы, бздит, бздицы, бздло, бзднуть, бздун, бздунья, бздюха, бздюшка, бздюшко, бля, блябу, блябуду, бляд, бляди, блядина, блядище, блядки, блядовать, блядство, блядун, блядуны, блядунья, блядь, блядюга, блять, вафел, вафлёр, взъебка, взьебка, взьебывать, въеб, въебался, въебенн, въебусь, въебывать, выблядок, выблядыш, выеб, выебать, выебен, выебнулся, выебон, выебываться, выпердеть, высраться, выссаться, вьебен, гавно, гавнюк, гавнючка, гамно, гандон, гнид, гнида, гниды, говенка, говенный, говешка, говназия, говнецо, говнище, говно, говноед, говнолинк, говночист, говнюк, говнюха, говнядина, говняк, говняный, говнять, гондон, доебываться, долбоеб, долбоёб, долбоящер, дрисня, дрист, дристануть, дристать, дристун, дристуха, дрочелло, дрочена, дрочила, дрочилка, дрочистый, дрочить, дрочка, дрочун, е6ал, е6ут, еб твою мать, ёб твою мать, ёбaн, ебaть, ебyч, ебал, ебало, ебальник, ебан, ебанамать, ебанат, ебаная, ёбаная, ебанический, ебанный, ебанныйврот, ебаное, ебануть, ебануться, ёбаную, ебаный, ебанько, ебарь, ебат, ёбат, ебатория, ебать, ебать-копать, ебаться, ебашить, ебёна, ебет, ебёт, ебец, ебик, ебин, ебись, ебическая, ебки, ебла, еблан, ебливый, еблище, ебло, еблыст, ебля, ёбн, ебнуть, ебнуться, ебня, ебошить, ебская, ебский, ебтвоюмать, ебун, ебут, ебуч, ебуче, ебучее, ебучий, ебучим, ебущ, ебырь, елда, елдак, елдачить, жопа, жопу, заговнять, задрачивать, задристать, задрота, зае6, заё6, заеб, заёб, заеба, заебал, заебанец, заебастая, заебастый, заебать, заебаться, заебашить, заебистое, заёбистое, заебистые, заёбистые, заебистый, заёбистый, заебись, заебошить, заебываться, залуп, залупа, залупаться, залупить, залупиться, замудохаться, запиздячить, засерать, засерун, засеря, засирать, засрун, захуячить, заябестая, злоеб, злоебучая, злоебучее, злоебучий, ибанамат, ибонех, изговнять, изговняться, изъебнуться, ипать, ипаться, ипаццо, Какдвапальцаобоссать, конча, курва, курвятник, лох, лошарa, лошара, лошары, лошок, лярва, малафья, манда, мандавошек, мандавошка, мандавошки, мандей, мандень, мандеть, мандища, мандой, манду, мандюк, минет, минетчик, минетчица, млять, мокрощелка, мокрощёлка, мразь, мудak, мудaк, мудаг, мудак, муде, мудель, мудеть, муди, мудил, мудила, мудистый, мудня, мудоеб, мудозвон, мудоклюй, на хер, на хуй, набздел, набздеть, наговнять, надристать, надрочить, наебать, наебет, наебнуть, наебнуться, наебывать, напиздел, напиздели, напиздело, напиздили, насрать, настопиздить, нахер, нахрен, нахуй, нахуйник, не ебет, не ебёт, невротебучий, невъебенно, нехира, нехрен, Нехуй, нехуйственно, ниибацо, ниипацца, ниипаццо, ниипет, никуя, нихера, нихуя, обдристаться, обосранец, обосрать, обосцать, обосцаться, обсирать, объебос, обьебать обьебос, однохуйственно, опездал, опизде, опизденивающе, остоебенить, остопиздеть, отмудохать, отпиздить, отпиздячить, отпороть, отъебись, охуевательский, охуевать, охуевающий, охуел, охуенно, охуеньчик, охуеть, охуительно, охуительный, охуяньчик, охуячивать, охуячить, очкун, падла, падонки, падонок, паскуда, педерас, педик, педрик, педрила, педрилло, педрило, педрилы, пездень, пездит, пездишь, пездо, пездят, пердануть, пердеж, пердение, пердеть, пердильник, перднуть, пёрднуть, пердун, пердунец, пердунина, пердунья, пердуха, пердь, переёбок, пернуть, пёрнуть, пи3д, пи3де, пи3ду, пиzдец, пидар, пидарaс, пидарас, пидарасы, пидары, пидор, пидорасы, пидорка, пидорок, пидоры, пидрас, пизда, пиздануть, пиздануться, пиздарваньчик, пиздато, пиздатое, пиздатый, пизденка, пизденыш, пиздёныш, пиздеть, пиздец, пиздит, пиздить, пиздиться, пиздишь, пиздища, пиздище, пиздобол, пиздоболы, пиздобратия, пиздоватая, пиздоватый, пиздолиз, пиздонутые, пиздорванец, пиздорванка, пиздострадатель, пизду, пиздуй, пиздун, пиздунья, пизды, пиздюга, пиздюк, пиздюлина, пиздюля, пиздят, пиздячить, писбшки, писька, писькострадатель, писюн, писюшка, по хуй, по хую, подговнять, подонки, подонок, подъебнуть, подъебнуться, поебать, поебень, поёбываает, поскуда, посрать, потаскуха, потаскушка, похер, похерил, похерила, похерили, похеру, похрен, похрену, похуй, похуист, похуистка, похую, придурок, приебаться, припиздень, припизднутый, припиздюлина, пробзделся, проблядь, проеб, проебанка, проебать, промандеть, промудеть, пропизделся, пропиздеть, пропиздячить, раздолбай, разхуячить, разъеб, разъеба, разъебай, разъебать, распиздай, распиздеться, распиздяй, распиздяйство, распроеть, сволота, сволочь, сговнять, секель, серун, серька, сестроеб, сикель, сила, сирать, сирывать, соси, спиздел, спиздеть, спиздил, спиздила, спиздили, спиздит, спиздить, срака, сраку, сраный, сранье, срать, срун, ссака, ссышь, стерва, страхопиздище, сука, суки, суходрочка, сучара, сучий, сучка, сучко, сучонок, сучье, сцание, сцать, сцука, сцуки, сцуконах, сцуль, сцыха, сцышь, съебаться, сыкун, трахае6, трахаеб, трахаёб, трахатель, ублюдок, уебать, уёбища, уебище, уёбище, уебищное, уёбищное, уебк, уебки, уёбки, уебок, уёбок, урюк, усраться, ушлепок, х_у_я_р_а, хyё, хyй, хyйня, хамло, хер, херня, херовато, херовина, херовый, хитровыебанный, хитрожопый, хуeм, хуе, хуё, хуевато, хуёвенький, хуевина, хуево, хуевый, хуёвый, хуек, хуёк, хуел, хуем, хуенч, хуеныш, хуенький, хуеплет, хуеплёт, хуепромышленник, хуерик, хуерыло, хуесос, хуесоска, хуета, хуетень, хуею, хуи, хуй, хуйком, хуйло, хуйня, хуйрик, хуище, хуля, хую, хуюл, хуя, хуяк, хуякать, хуякнуть, хуяра, хуясе, хуячить, целка, чмо, чмошник, чмырь, шалава, шалавой, шараёбиться, шлюха, шлюхой, шлюшка, ябывает');
@@ -126,7 +168,7 @@ window.s_rus = listToArray(' ,а,б,в,г,д,е,ё,ж,з,и,й,к,л,м,н,о,п
 var color = "";
 style.addRule(".post_type_oppost","border-radius:3px");
 var stil = "font-size:50px;font-weight:bold;color:#7CFC00;-webkit-text-stroke:.036em black";
-var text = "Thanks for using AntiBump!";
+var text = "Thank you for using AntiBump!";
 //style.addRule(".kok","background-color:var(--theme_default_postbghighlight);");
 /*style.addRule("@keyframes kzk","0%{background-color:var(--theme_default_postbghighlight)}72%{background-color:var(--theme_default_postbghighlight)}100%{background-color:var(--theme_default_postbg)}");*/
 style.addRule("@keyframes kzk","0%{background-color:var(--theme_default_postbghighlight)}72%{background-color:var(--theme_default_postbghighlight)}100%{background-color:var(--theme_default_postbg)}");
@@ -281,10 +323,11 @@ cmbbox.value = getCookie('slov');
 
 t.innerHTML = dakk;
 
-glowrand.type = antiplashque.type = "checkbox";
+antidoskbnner.type = glowrand.type = antiplashque.type = "checkbox";
 try {
     antiplashque.checked = JSON.parse(getCookie('antiplashque'));
     glowrand.checked = JSON.parse(getCookie('glowrand'));
+    antidoskbnner.checked = JSON.parse(getCookie('adskbn'));
 }catch(E){}
 // cbox.type = "checkbox";
 cbox.type = "text";
@@ -308,7 +351,13 @@ rndd.id = "rnd";
 rndd.onclick = randomPost;
 rndd.innerText = "Случайный пост";
 rndd.style = "user-select:none";
-
+edit.id = "abeditbutton"
+style.addRule('#abeditbutton','cursor:pointer');
+edit.src = "https://i.imgur.com/EXSZdp9.png";
+edit.style = "width:16px;height:16px; user-select:none;position:absolute;vertical-align:text-top; visibility:hidden";
+editinp.style = "font-size:35px;outline:none;position:absolute;z-index:9999;color:var(--theme_default_link); visibility:hidden;";
+editinp.style.left = $q('#title').offsetWidth.toString()+"px";
+editinp.placeholder = $q('#title').innerText;
 p.style.cssText = "padding:.3em;"
 lab.innerHTML = "Настройки";
 cbox.maxlength = ""
@@ -441,6 +490,60 @@ antiplashque.onchange = function() {
         }
         else {delCookie('plashque'); setCookie('antiplashque','false')}
 }
+function antibnner() {
+    try{$qa('section.mmm').forEach((el) => {el.remove()})}catch(e){$q('section.mmm').remove()};
+}
+antidoskbnner.onchange = function() {
+    if (this.checked) {
+        $('div.logo').hide();
+        setCookie('adskbn','true',30)
+    }
+    else {
+        $('div.logo').show();
+        setCookie('adskbn','false',30);
+    }
+}
+edit.onclick = function() {
+    if (!editmode) {
+        editmode = true;
+        editinp.style.visibility = "visible";
+        editinp.focus();
+    }
+    else {
+        editmode = false;
+        editinp.style.visibility = "hidden";
+    }
+}
+editinp.oninput = function() {
+    var nl = (editinp.value.length*24);
+    var ol = ($q('#title').innerText.length*24);
+    //editinp.style.width = (editinp.value.length*24).toString()+'px' == "0px" ? ($q('#title').innerText.length*24).toString()+"px" : (editinp.value.length*24).toString()+'px';
+    if (nl > ol) {
+        editinp.style.width = nl+"px";
+    }else if (editing.style.width != ol+"px") {
+        editinp.style.width = ol+"px";
+    }
+}
+editinp.onkeypress = function(e) {
+    var board = getBoard()
+    if (e.keyCode == 13) {
+        if (editinp.value.length > 0) {
+            setCookie('customtitle',editinp.value,30,getBoard()+"/");
+            editmode = false;
+            editinp.style.visibility = "hidden";
+            $q('#title').innerText = editinp.value;
+        }
+        else {
+            document.cookie = 'customtitle=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/'+board+'/';
+            editmode = false;
+            editinp.style.visibility = "hidden";
+            $q('#title').innerText = oldtitle;
+        }
+    }
+}
+$q('h1.boardname').onmouseenter = function() {edit.style.visibility = "visible"};
+$q('h1.boardname').onmouseleave = function() {edit.style.visibility = "hidden"};
+window.scrollcb_array.push(antibnner);
 var wb = $cr('div');
 var chx = $cr('input');
 var chhh = $cr('label');
@@ -456,7 +559,6 @@ var toolbar = document.querySelector('.options');
 toolbar.appendChild(wb);
 wb.appendChild(chx);
 wb.appendChild(chhh);
-
 koqs.appendChild(icon);
 koqs.appendChild(nsfw);
 document.querySelector('header').appendChild(sett);
@@ -481,4 +583,7 @@ window.$("label#dddeddd").attr('for','nex');
 window.$alert("Антибамп скрыл "+ bmps+" бамп"+spr);
 $q('#abcbox').after(" Словарь для вайпа:");
 cmbbox.after($cr("br"),antiplashque," Убирать баннеры 2чграма",$cr('br'));
-sett.append(glowrand," Плавная прокрутка при рандомном посте");
+sett.append(glowrand," Плавная прокрутка при рандомном посте",$cr('br'));
+sett.append(antidoskbnner," Убирать баннеры других доск",$cr('br'));
+$q('h1.boardname').appendChild(edit);
+$q('a#title').parentElement.append(editinp);
