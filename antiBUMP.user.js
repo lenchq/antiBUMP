@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         antiBUMP
 // @namespace    koq
-// @version      1.9.1
+// @version      1.9.2
 // @description  BUMP OUT OF HERE. removes all messages with "BUMP" on 2ch.
 // @author       dik&dok
 // @match        *://2ch.hk/*/res/*
@@ -115,6 +115,7 @@ try{if (JSON.parse(getCookie('antiplashque'))) {
 try{if (JSON.parse(getCookie('adskbn'))) {
     $('div.logo').hide();
 }}catch(e){setCookie('adskbn','false')}
+try{var d = JSON.parse(getCookie('glowrand'));}catch(e){setCookie('glowrand','false')};
 var oldtitle = $q('#title').innerText;
 var newtitle = getCookie('customtitle');
 var title = document.head.querySelector('title');
