@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         antiBUMP
 // @namespace    koq
-// @version      1.9.2
+// @version      1.9.3
 // @description  BUMP OUT OF HERE. removes all messages with "BUMP" on 2ch.
 // @author       dik&dok
 // @match        *://2ch.hk/*/res/*
@@ -14,11 +14,13 @@
 // @grant        none
 // @downloadUrl  https://raw.githubusercontent.com/lenchik-lox/antiBUMP/master/antiBUMP.user.js
 // @updateUrl    https://raw.githubusercontent.com/lenchik-lox/antiBUMP/master/antiBUMP.user.js
-// @resource     kok.png  https://i.imgur.com/EXSZdp9.png
 // ==/UserScript==
 
 
 'use strict';
+String.prototype.count = function(char) {
+    return (this.match(new RegExp(char, "g")) || []).length;
+}
 function delCookie(key,path) {
     if (typeof(path)=="string") {path = "/"+path+"/";}
     document.cookie = key + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT'+";"+path;
@@ -43,14 +45,30 @@ function listToArray(str) {
     return array;
 }
 function getBoard() {
+    //https://2ch.hk/rf/
+    var count= 0;
     var tett = "";
+    var tit = $q('#title').href;
+    for(var i = 0; i < tit.length;i++) {
+        if (tit[i] == '/') {count++};
+        if (count ==3) {
+            tett+=tit[i]
+        }
+        else if (count>3) {
+            return tett.substr(1);
+        }
+    }
+    //return tett;
+
+    /*var tett = "";
+    var tit = document.head.querySelector('title').innerText.trim();
     for (var i = 0; true; i++) {
-        var tit = document.head.querySelector('title').innerText;
         if (tit[i] == '-') {break;}
         else {tett += tit[i]}
     }
     //return tett.cut(2);
-    return tett.reve().cut(1).substring(1).trim().substr(1,1);
+    return tett.cut(1).reve().cut(1).substring(1).trim().substr(1,1);*/
+    //return $q('#title').href.substr(1);
 }
 window.getBoard = getBoard;
 window.lta = listToArray;
@@ -117,6 +135,7 @@ try{if (JSON.parse(getCookie('adskbn'))) {
 }}catch(e){setCookie('adskbn','false')}
 try{var d = JSON.parse(getCookie('glowrand'));}catch(e){setCookie('glowrand','false')};
 var oldtitle = $q('#title').innerText;
+var oldwidth = $q('#title').offsetWidth;
 var newtitle = getCookie('customtitle');
 var title = document.head.querySelector('title');
 if (typeof(newtitle)!="undefined" && newtitle.length>0) {
@@ -135,7 +154,7 @@ window.$qa = $qa;
 window.$cr = $cr;
 window.rand = rand;
 //menu...
-var jalil = ["бамп","бап","бам","бапм","bamp","bump","b*mp","бабамп","бумп","бамп!","бамп?","бымп","бомп","бамж","бвмп","bmpp","бюмп","бамплю","ббмп","баамп","бамп!!","бамп!!!","bunp","блымп","бамп.","бемп", "roll","ролл"];
+var jalil = ["бамп","бап","бам","бапм","bamp","bump","b*mp","бабамп","бумп","бамп!","бамп?","бымп","бомп","бамж","бвмп","bmpp","бюмп","бамплю","ббмп","баамп","бамп!!","бамп!!!","bunp","блымп","бамп.","бемп"];
 //window.ss = jalil;
 var dakk = jalil[rand(0,jalil.length-1)];
 var style = document.styleSheets[0];
@@ -146,6 +165,7 @@ var butt = $cr("button");
 var t = $cr("span");
 var m = $cr("span");
 var dook = getCookie("bb") === "true";
+var menuopen = false;
 var s = $cr("span");
 var cbox = $cr("input");
 var cmbbox = $cr('select');
@@ -333,7 +353,7 @@ try {
 // cbox.type = "checkbox";
 cbox.type = "text";
 cbox.id = "abcbox";
-cbox.style.cssText = "text-align:center;margin:.21em;border-radius:4px; background:inherit;border:none;border-bottom:1px solid gray;font-size:18px;color:inherit;";
+cbox.style.cssText = "text-align:center;margin:.21em;border-radius:4px; background:inherit;border:none;border-bottom:1px solid gray;color:inherit;";
 butt.id = "abbutton";
 style.addRule("#abcbox:focus","outline:none;border-bottom:1px solid black");document.styleSheets[0].addRule("#abbutton:focus","outline:none;");
 butt.innerText ="Сохранить";
@@ -356,9 +376,10 @@ edit.id = "abeditbutton"
 style.addRule('#abeditbutton','cursor:pointer');
 edit.src = "https://i.imgur.com/EXSZdp9.png";
 edit.style = "width:16px;height:16px; user-select:none;position:absolute;vertical-align:text-top; visibility:hidden";
-editinp.style = "font-size:35px;outline:none;position:absolute;z-index:9999;color:var(--theme_default_link); visibility:hidden;";
+editinp.style = "font-size:30px;outline:none;position:absolute;z-index:9999;color:var(--theme_default_link); visibility:hidden; border:none; border-bottom:1.5px solid;background:transparent;margin-top:1px;";
 editinp.style.left = $q('#title').offsetWidth.toString()+"px";
 editinp.placeholder = $q('#title').innerText;
+//editinp.title = "Нажмите Enter для возвращения оригинального названия доски";
 p.style.cssText = "padding:.3em;"
 lab.innerHTML = "Настройки";
 cbox.maxlength = ""
@@ -367,11 +388,16 @@ sett.style.cssText = "padding:3px;;user-select:none;;transition:.2s ease-in-out;
 icon.style = ";transition:.3s ease-in-out;position:relative;width:1em;height:1em;vertical-align:middle;display:inline-block;margin-left:.6em;cursor:pointer;";
 p.id = lab.id = "abtext";
 lab.style = "text-align:center; position:relative; display:inline-block; left:4.1em;font-size:17px";
-icon.onclick = menu; function menu() {var kak = sett.style.opacity == "1" ? "rotate(-60deg)" : "rotate(0deg)";sett.style.visibility = "visible";var ksk = sett.style.opacity == "1" ? "hidden" : "visible";var kok = sett.style.opacity == "1" ? "0" : "1"; sett.style.opacity = kok; icon.style.transform=kak; setTimeout(function() {sett.style.visibility = ksk},205)};
+icon.onclick = menu; function menu() {menuopen = !menuopen;var kak = sett.style.opacity == "1" ? "rotate(-60deg)" : "rotate(0deg)";sett.style.visibility = "visible";var ksk = sett.style.opacity == "1" ? "hidden" : "visible";var kok = sett.style.opacity == "1" ? "0" : "1"; sett.style.opacity = kok; icon.style.transform=kak; setTimeout(function() {sett.style.visibility = ksk},205)};
 t.style.cssText += ";transition:.2s ease-in-out;left:0px;position:relative;"+d1k;
 m.style.cssText += ";transition:.2s ease-in-out;border-radius:10px;vertical-align:middle;width:32px;height:16px;; position:relative;display:inline-block; padding:2px; cursor:pointer;"+d3k;
 s.style.cssText += ";transition:.2s ease-in-out;border-radius:100%;vertical-align:middle;width:10px;height:10px;background:var(--theme_default_bg);position:relative;display:inline-block;margin:-1px;cursor:pointer;"+d2k;
-if (!dook) {icon.style.visibility = "hidden"}
+if (!dook) {
+    cbox.style.cursor = "not-allowed";
+    cbox.readOnly = true;
+    cbox.style.userSelect = "none";
+    cbox.style.color = "gray";
+}
 s.onclick = m.onclick = kak
 function kak() {
     if (getCookie("bb")=="true") {
@@ -392,7 +418,7 @@ function kak() {
         t.style ="text-decoration:line-through";
         setCookie("bb","true");
     }
-    setInterval(function() {/*location.reload*/},250);
+    //setInterval(function() {/*location.reload*/},250);
 }
 butt.onclick = function() {
     if (cbox.value != ctext) {
@@ -509,38 +535,75 @@ edit.onclick = function() {
         editmode = true;
         editinp.style.visibility = "visible";
         editinp.focus();
+        var ol = ($q('#title').innerText.length*24);
+        /*editinp.style.width = ol+"px"*/ editinp.style.width = ($q('#title').offsetWidth+5)+"px";
+        editinp.value = $q('#title').innerText;
+        editinp.style.left = $q('#title').offsetLeft+"px";
+        $q('#title').style.opacity = 0;
+        edit.style.opacity = 0;
     }
     else {
         editmode = false;
         editinp.style.visibility = "hidden";
     }
 }
-editinp.oninput = function() {
-    var nl = (editinp.value.length*24);
-    var ol = ($q('#title').innerText.length*24);
+window.onresize = function() {editinp.style.left = $q('#title').offsetLeft+"px";}
+editinp.oninput = function(e) {
+    var d = $cr('a')
+    d.style.cssText = "opacity:0;font-size:30px;position:absolute; border-bottom: 2px solid;";
+    d.innerHTML = editinp.value;
+    document.body.append(d);
+    if (editinp.value.length>0) {
+        editinp.style.width = (d.offsetWidth+12+(editinp.value.count(' ')*10))+"px";
+    }
+    else {
+        editinp.style.width = ($q('#title').offsetWidth+5)+"px";
+    }
+    d.remove()
+    /*if (e.data == " ") {
+        editinp.style.width = (parseInt(editinp.style.width.cut(2))+10)+"px";
+    }
+    else {
+        editinp.style.width = (d.offsetWidth+6)+"px";
+    }*/
+
+    /*var mnoz = 21;
+    var nl = (editinp.value.length*mnoz);
+    var ol = ($q('#title').innerText.length*mnoz);
     //editinp.style.width = (editinp.value.length*24).toString()+'px' == "0px" ? ($q('#title').innerText.length*24).toString()+"px" : (editinp.value.length*24).toString()+'px';
     if (nl > ol) {
         editinp.style.width = nl+"px";
-    }else if (editing.style.width != ol+"px") {
+    }else if (editinp.style.width != ol+"px") {
         editinp.style.width = ol+"px";
-    }
+    }*/
 }
 editinp.onkeypress = function(e) {
-    var board = getBoard()
+    var board = getBoard()+"/";
     if (e.keyCode == 13) {
         if (editinp.value.length > 0) {
-            setCookie('customtitle',editinp.value,30,getBoard()+"/");
+            setCookie('customtitle',editinp.value,30,board);
             editmode = false;
             editinp.style.visibility = "hidden";
             $q('#title').innerText = editinp.value;
+            var newtitle = getCookie('customtitle');
+            title.innerText = '/'+getBoard()+'/ - '+newtitle;
         }
         else {
-            document.cookie = 'customtitle=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/'+board+'/';
+            document.cookie = 'customtitle=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/'+board;
             editmode = false;
             editinp.style.visibility = "hidden";
             $q('#title').innerText = oldtitle;
+            title.innerText = '/'+getBoard()+'/ - '+oldtitle;
         }
+        $q('#title').style.opacity = 1;
+        edit.style.opacity = 1;
     }
+}
+document.onclick = function(e){
+    if ((e.toElement == sett || e.toElement == icon || e.toElement.parentElement == sett || e.toElement.parentElement.parentElement == sett)&& menuopen) {
+
+    }
+    else if (menuopen) {menu(); menuopen = false;}
 }
 $q('h1.boardname').onmouseenter = function() {edit.style.visibility = "visible"};
 $q('h1.boardname').onmouseleave = function() {edit.style.visibility = "hidden"};
@@ -585,6 +648,6 @@ window.$alert("Антибамп скрыл "+ bmps+" бамп"+spr);
 $q('#abcbox').after(" Словарь для вайпа:");
 cmbbox.after($cr("br"),antiplashque," Убирать баннеры 2чграма",$cr('br'));
 sett.append(glowrand," Плавная прокрутка при рандомном посте",$cr('br'));
-sett.append(antidoskbnner," Убирать баннеры других доск",$cr('br'));
+sett.append(antidoskbnner," Убирать баннеры других досок",$cr('br'));
 $q('h1.boardname').appendChild(edit);
 $q('a#title').parentElement.append(editinp);
