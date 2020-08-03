@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         antiBUMP
 // @namespace    koq
-// @version      1.9.3
-// @description  BUMP OUT OF HERE. removes all messages with "BUMP" on 2ch.
+// @version      1.10.0
+// @description  BUMP OUT OF HERE. removes all messages with "BUMP" and adds new features on 2ch.
 // @author       dik&dok
 // @match        *://2ch.hk/*/res/*
 // @match        *://2ch.*/*
@@ -18,6 +18,34 @@
 
 
 'use strict';
+if (typeof(window.board)=="undefined") return;
+var stil = "font-size:32px;font-weight:bold;color:#7CFC00;-webkit-text-stroke:.036em black";
+console.log("%c--------",stil)
+function pretext(text) {
+    if (typeof(text)=="undefined") return -1;
+    var ret = "";
+    for (var i = 0; i < 50; i++) {
+        if (text[i]!=undefined){if (text[i]!='\n') ret += text[i];}
+        else break;
+    }
+    return ret + "...";
+}
+Node.prototype.$qa = function(el) {
+    return this.querySelectorAll(el);
+}
+Node.prototype.$p = function(c) {
+    if (typeof(c)=="undefined"){c=1}
+    var ex;
+    ex = "this."
+    for (var i = 0; i < c; i++) {
+        ex += "parentElement.";
+    }
+    var _ = eval(ex.cut(1));
+    return _;
+}
+Node.prototype.$q = function(el) {
+	return this.querySelector(el);
+}
 String.prototype.count = function(char) {
     return (this.match(new RegExp(char, "g")) || []).length;
 }
@@ -27,7 +55,7 @@ function delCookie(key,path) {
     return !getCookie(key);
 }
 String.prototype.cut = function(num) {
-    if (typeof(num)!="number"){throw("string needed")}
+    if (typeof(num)!="number"){throw("number needed")}
     return this.reve().substring(num).reve();
 }
 function listToArray(str) {
@@ -72,6 +100,7 @@ function getBoard() {
 }
 window.getBoard = getBoard;
 window.lta = listToArray;
+
 //просто функция
 function reve(str) {
     var s = str.split("");
@@ -120,20 +149,31 @@ function $q(el) {
 function $qa(el) {
     return document.querySelectorAll(el);
 }
+function newOption(id, name) {
+	var _opt = document.createElement('option');
+	_opt.id = _opt.value = id;
+	_opt.innerText = name;
+	return _opt;
+}
 if (!(getCookie("bb")=="true"|| getCookie("bb")=="false")) {
     setCookie("bb","true");
     setCookie("bbst","bump");
 }
+var allowRollbutton, fasthideallow;
 try{if (JSON.parse(getCookie('antiplashque'))) {
-    try {$q('section.mmm').forEach((el) => {el.remove()})} catch(e) {$q('section.mmm').remove();}
-    try {$q('div#plashque').remove();} catch(e){}
+    try {$qa('.mmm').forEach((el) => {el.remove();})} catch(e) {$q('.mmm').remove();console.warn(e)}
+    try {$q('div#plashque').remove();} catch(e){;console.warn("plashque not found")}
     setCookie('plashque','1');
     setCookie('antiplashque','true');
-}}catch(e){setCookie('antiplashque','false')};
-try{if (JSON.parse(getCookie('adskbn'))) {
-    $('div.logo').hide();
-}}catch(e){setCookie('adskbn','false')}
-try{var d = JSON.parse(getCookie('glowrand'));}catch(e){setCookie('glowrand','false')};
+}}catch(e){console.warn("setted 'antiplashque' to false due to "+e);setCookie('antiplashque','false');console.warn(e)};
+try{if (JSON.parse(getCookie('adskbn'))){$('div.logo').hide();}}catch(e){console.warn("setted 'antidoskbanner' to false due to "+e);setCookie('adskbn','false')}
+try{var d = JSON.parse(getCookie('glowrand'));}catch(e){console.warn("setted 'glowrand' to false due to "+e);setCookie('glowrand','false')};
+try{allowRollbutton = JSON.parse(getCookie('rollbutton'));}catch(e){console.warn("setted 'rollbutton' to true due to "+e);setCookie('rollbutton','true'); allowRollbutton = true;};
+try{fasthideallow=JSON.parse(getCookie('fasthide'));}catch(e){console.warn("setted 'fasthide' to true due to "+e);setCookie('fasthide','true',30);fasthideallow=true;}
+if (getCookie('slov') == undefined) {
+	setCookie('slov','s_eng',30);
+}
+
 var oldtitle = $q('#title').innerText;
 var oldwidth = $q('#title').offsetWidth;
 var newtitle = getCookie('customtitle');
@@ -153,6 +193,7 @@ window.$q = $q;
 window.$qa = $qa;
 window.$cr = $cr;
 window.rand = rand;
+window.skr = 0;
 //menu...
 var jalil = ["бамп","бап","бам","бапм","bamp","bump","b*mp","бабамп","бумп","бамп!","бамп?","бымп","бомп","бамж","бвмп","bmpp","бюмп","бамплю","ббмп","баамп","бамп!!","бамп!!!","bunp","блымп","бамп.","бемп"];
 //window.ss = jalil;
@@ -161,6 +202,8 @@ var style = document.styleSheets[0];
 dakk = dakk[0].toUpperCase()+dakk.substring(1,dakk.length)
 // jalil.push("1","2","3","4","5","6","7","8","9","0");
 var ctext = getCookie("bbst")!=undefined ? decodeURIComponent(getCookie("bbst")) : "бамп";
+var rolls = listToArray('ролл,рулль,руль,суши,roll,hjkk,R_O_L_L,Roll,Ролл.');
+console.log(rolls);
 var butt = $cr("button");
 var t = $cr("span");
 var m = $cr("span");
@@ -169,7 +212,12 @@ var menuopen = false;
 var s = $cr("span");
 var cbox = $cr("input");
 var cmbbox = $cr('select');
+var rollqr = $cr('input');
+var al = $cr('input');
+var rollbutton = $cr('input');
+var rollbuttonCheckBox = $cr('input');
 var editinp = $cr('input');
+var fasthide = $cr('input');
 var antidoskbnner = $cr('input');
 var sett = $cr("div");
 var nsfw = $cr('a');
@@ -183,12 +231,11 @@ var p = $cr('label');
 var editmode = false;
 var antiplashque = $cr('input');
 var sep = $cr('separator');
-window.s_mat = listToArray('6ля, 6лядь, 6лять, b3ъeб, cock, cunt, e6aль, ebal, eblan, eбaл, eбaть, eбyч, eбать, eбёт, eблантий, fuck, fucker, fucking, xyёв, xyй, xyя, xуе,xуй, xую, zaeb, zaebal, zaebali, zaebat, архипиздрит, ахуел, ахуеть, бздение, бздеть, бздех, бздецы, бздит, бздицы, бздло, бзднуть, бздун, бздунья, бздюха, бздюшка, бздюшко, бля, блябу, блябуду, бляд, бляди, блядина, блядище, блядки, блядовать, блядство, блядун, блядуны, блядунья, блядь, блядюга, блять, вафел, вафлёр, взъебка, взьебка, взьебывать, въеб, въебался, въебенн, въебусь, въебывать, выблядок, выблядыш, выеб, выебать, выебен, выебнулся, выебон, выебываться, выпердеть, высраться, выссаться, вьебен, гавно, гавнюк, гавнючка, гамно, гандон, гнид, гнида, гниды, говенка, говенный, говешка, говназия, говнецо, говнище, говно, говноед, говнолинк, говночист, говнюк, говнюха, говнядина, говняк, говняный, говнять, гондон, доебываться, долбоеб, долбоёб, долбоящер, дрисня, дрист, дристануть, дристать, дристун, дристуха, дрочелло, дрочена, дрочила, дрочилка, дрочистый, дрочить, дрочка, дрочун, е6ал, е6ут, еб твою мать, ёб твою мать, ёбaн, ебaть, ебyч, ебал, ебало, ебальник, ебан, ебанамать, ебанат, ебаная, ёбаная, ебанический, ебанный, ебанныйврот, ебаное, ебануть, ебануться, ёбаную, ебаный, ебанько, ебарь, ебат, ёбат, ебатория, ебать, ебать-копать, ебаться, ебашить, ебёна, ебет, ебёт, ебец, ебик, ебин, ебись, ебическая, ебки, ебла, еблан, ебливый, еблище, ебло, еблыст, ебля, ёбн, ебнуть, ебнуться, ебня, ебошить, ебская, ебский, ебтвоюмать, ебун, ебут, ебуч, ебуче, ебучее, ебучий, ебучим, ебущ, ебырь, елда, елдак, елдачить, жопа, жопу, заговнять, задрачивать, задристать, задрота, зае6, заё6, заеб, заёб, заеба, заебал, заебанец, заебастая, заебастый, заебать, заебаться, заебашить, заебистое, заёбистое, заебистые, заёбистые, заебистый, заёбистый, заебись, заебошить, заебываться, залуп, залупа, залупаться, залупить, залупиться, замудохаться, запиздячить, засерать, засерун, засеря, засирать, засрун, захуячить, заябестая, злоеб, злоебучая, злоебучее, злоебучий, ибанамат, ибонех, изговнять, изговняться, изъебнуться, ипать, ипаться, ипаццо, Какдвапальцаобоссать, конча, курва, курвятник, лох, лошарa, лошара, лошары, лошок, лярва, малафья, манда, мандавошек, мандавошка, мандавошки, мандей, мандень, мандеть, мандища, мандой, манду, мандюк, минет, минетчик, минетчица, млять, мокрощелка, мокрощёлка, мразь, мудak, мудaк, мудаг, мудак, муде, мудель, мудеть, муди, мудил, мудила, мудистый, мудня, мудоеб, мудозвон, мудоклюй, на хер, на хуй, набздел, набздеть, наговнять, надристать, надрочить, наебать, наебет, наебнуть, наебнуться, наебывать, напиздел, напиздели, напиздело, напиздили, насрать, настопиздить, нахер, нахрен, нахуй, нахуйник, не ебет, не ебёт, невротебучий, невъебенно, нехира, нехрен, Нехуй, нехуйственно, ниибацо, ниипацца, ниипаццо, ниипет, никуя, нихера, нихуя, обдристаться, обосранец, обосрать, обосцать, обосцаться, обсирать, объебос, обьебать обьебос, однохуйственно, опездал, опизде, опизденивающе, остоебенить, остопиздеть, отмудохать, отпиздить, отпиздячить, отпороть, отъебись, охуевательский, охуевать, охуевающий, охуел, охуенно, охуеньчик, охуеть, охуительно, охуительный, охуяньчик, охуячивать, охуячить, очкун, падла, падонки, падонок, паскуда, педерас, педик, педрик, педрила, педрилло, педрило, педрилы, пездень, пездит, пездишь, пездо, пездят, пердануть, пердеж, пердение, пердеть, пердильник, перднуть, пёрднуть, пердун, пердунец, пердунина, пердунья, пердуха, пердь, переёбок, пернуть, пёрнуть, пи3д, пи3де, пи3ду, пиzдец, пидар, пидарaс, пидарас, пидарасы, пидары, пидор, пидорасы, пидорка, пидорок, пидоры, пидрас, пизда, пиздануть, пиздануться, пиздарваньчик, пиздато, пиздатое, пиздатый, пизденка, пизденыш, пиздёныш, пиздеть, пиздец, пиздит, пиздить, пиздиться, пиздишь, пиздища, пиздище, пиздобол, пиздоболы, пиздобратия, пиздоватая, пиздоватый, пиздолиз, пиздонутые, пиздорванец, пиздорванка, пиздострадатель, пизду, пиздуй, пиздун, пиздунья, пизды, пиздюга, пиздюк, пиздюлина, пиздюля, пиздят, пиздячить, писбшки, писька, писькострадатель, писюн, писюшка, по хуй, по хую, подговнять, подонки, подонок, подъебнуть, подъебнуться, поебать, поебень, поёбываает, поскуда, посрать, потаскуха, потаскушка, похер, похерил, похерила, похерили, похеру, похрен, похрену, похуй, похуист, похуистка, похую, придурок, приебаться, припиздень, припизднутый, припиздюлина, пробзделся, проблядь, проеб, проебанка, проебать, промандеть, промудеть, пропизделся, пропиздеть, пропиздячить, раздолбай, разхуячить, разъеб, разъеба, разъебай, разъебать, распиздай, распиздеться, распиздяй, распиздяйство, распроеть, сволота, сволочь, сговнять, секель, серун, серька, сестроеб, сикель, сила, сирать, сирывать, соси, спиздел, спиздеть, спиздил, спиздила, спиздили, спиздит, спиздить, срака, сраку, сраный, сранье, срать, срун, ссака, ссышь, стерва, страхопиздище, сука, суки, суходрочка, сучара, сучий, сучка, сучко, сучонок, сучье, сцание, сцать, сцука, сцуки, сцуконах, сцуль, сцыха, сцышь, съебаться, сыкун, трахае6, трахаеб, трахаёб, трахатель, ублюдок, уебать, уёбища, уебище, уёбище, уебищное, уёбищное, уебк, уебки, уёбки, уебок, уёбок, урюк, усраться, ушлепок, х_у_я_р_а, хyё, хyй, хyйня, хамло, хер, херня, херовато, херовина, херовый, хитровыебанный, хитрожопый, хуeм, хуе, хуё, хуевато, хуёвенький, хуевина, хуево, хуевый, хуёвый, хуек, хуёк, хуел, хуем, хуенч, хуеныш, хуенький, хуеплет, хуеплёт, хуепромышленник, хуерик, хуерыло, хуесос, хуесоска, хуета, хуетень, хуею, хуи, хуй, хуйком, хуйло, хуйня, хуйрик, хуище, хуля, хую, хуюл, хуя, хуяк, хуякать, хуякнуть, хуяра, хуясе, хуячить, целка, чмо, чмошник, чмырь, шалава, шалавой, шараёбиться, шлюха, шлюхой, шлюшка, ябывает');
+window.s_mat = listToArray(' 6ля, 6лядь, 6лять, b3ъeб, cock, cunt, e6aль, ebal, eblan, eбaл, eбaть, eбyч, eбать, eбёт, eблантий, fuck, fucker, fucking, xyёв, xyй, xyя, xуе,xуй, xую, zaeb, zaebal, zaebali, zaebat, архипиздрит, ахуел, ахуеть, бздение, бздеть, бздех, бздецы, бздит, бздицы, бздло, бзднуть, бздун, бздунья, бздюха, бздюшка, бздюшко, бля, блябу, блябуду, бляд, бляди, блядина, блядище, блядки, блядовать, блядство, блядун, блядуны, блядунья, блядь, блядюга, блять, вафел, вафлёр, взъебка, взьебка, взьебывать, въеб, въебался, въебенн, въебусь, въебывать, выблядок, выблядыш, выеб, выебать, выебен, выебнулся, выебон, выебываться, выпердеть, высраться, выссаться, вьебен, гавно, гавнюк, гавнючка, гамно, гандон, гнид, гнида, гниды, говенка, говенный, говешка, говназия, говнецо, говнище, говно, говноед, говнолинк, говночист, говнюк, говнюха, говнядина, говняк, говняный, говнять, гондон, доебываться, долбоеб, долбоёб, долбоящер, дрисня, дрист, дристануть, дристать, дристун, дристуха, дрочелло, дрочена, дрочила, дрочилка, дрочистый, дрочить, дрочка, дрочун, е6ал, е6ут, еб твою мать, ёб твою мать, ёбaн, ебaть, ебyч, ебал, ебало, ебальник, ебан, ебанамать, ебанат, ебаная, ёбаная, ебанический, ебанный, ебанныйврот, ебаное, ебануть, ебануться, ёбаную, ебаный, ебанько, ебарь, ебат, ёбат, ебатория, ебать, ебать-копать, ебаться, ебашить, ебёна, ебет, ебёт, ебец, ебик, ебин, ебись, ебическая, ебки, ебла, еблан, ебливый, еблище, ебло, еблыст, ебля, ёбн, ебнуть, ебнуться, ебня, ебошить, ебская, ебский, ебтвоюмать, ебун, ебут, ебуч, ебуче, ебучее, ебучий, ебучим, ебущ, ебырь, елда, елдак, елдачить, жопа, жопу, заговнять, задрачивать, задристать, задрота, зае6, заё6, заеб, заёб, заеба, заебал, заебанец, заебастая, заебастый, заебать, заебаться, заебашить, заебистое, заёбистое, заебистые, заёбистые, заебистый, заёбистый, заебись, заебошить, заебываться, залуп, залупа, залупаться, залупить, залупиться, замудохаться, запиздячить, засерать, засерун, засеря, засирать, засрун, захуячить, заябестая, злоеб, злоебучая, злоебучее, злоебучий, ибанамат, ибонех, изговнять, изговняться, изъебнуться, ипать, ипаться, ипаццо, Какдвапальцаобоссать, конча, курва, курвятник, лох, лошарa, лошара, лошары, лошок, лярва, малафья, манда, мандавошек, мандавошка, мандавошки, мандей, мандень, мандеть, мандища, мандой, манду, мандюк, минет, минетчик, минетчица, млять, мокрощелка, мокрощёлка, мразь, мудak, мудaк, мудаг, мудак, муде, мудель, мудеть, муди, мудил, мудила, мудистый, мудня, мудоеб, мудозвон, мудоклюй, на хер, на хуй, набздел, набздеть, наговнять, надристать, надрочить, наебать, наебет, наебнуть, наебнуться, наебывать, напиздел, напиздели, напиздело, напиздили, насрать, настопиздить, нахер, нахрен, нахуй, нахуйник, не ебет, не ебёт, невротебучий, невъебенно, нехира, нехрен, Нехуй, нехуйственно, ниибацо, ниипацца, ниипаццо, ниипет, никуя, нихера, нихуя, обдристаться, обосранец, обосрать, обосцать, обосцаться, обсирать, объебос, обьебать обьебос, однохуйственно, опездал, опизде, опизденивающе, остоебенить, остопиздеть, отмудохать, отпиздить, отпиздячить, отпороть, отъебись, охуевательский, охуевать, охуевающий, охуел, охуенно, охуеньчик, охуеть, охуительно, охуительный, охуяньчик, охуячивать, охуячить, очкун, падла, падонки, падонок, паскуда, педерас, педик, педрик, педрила, педрилло, педрило, педрилы, пездень, пездит, пездишь, пездо, пездят, пердануть, пердеж, пердение, пердеть, пердильник, перднуть, пёрднуть, пердун, пердунец, пердунина, пердунья, пердуха, пердь, переёбок, пернуть, пёрнуть, пи3д, пи3де, пи3ду, пиzдец, пидар, пидарaс, пидарас, пидарасы, пидары, пидор, пидорасы, пидорка, пидорок, пидоры, пидрас, пизда, пиздануть, пиздануться, пиздарваньчик, пиздато, пиздатое, пиздатый, пизденка, пизденыш, пиздёныш, пиздеть, пиздец, пиздит, пиздить, пиздиться, пиздишь, пиздища, пиздище, пиздобол, пиздоболы, пиздобратия, пиздоватая, пиздоватый, пиздолиз, пиздонутые, пиздорванец, пиздорванка, пиздострадатель, пизду, пиздуй, пиздун, пиздунья, пизды, пиздюга, пиздюк, пиздюлина, пиздюля, пиздят, пиздячить, писбшки, писька, писькострадатель, писюн, писюшка, по хуй, по хую, подговнять, подонки, подонок, подъебнуть, подъебнуться, поебать, поебень, поёбываает, поскуда, посрать, потаскуха, потаскушка, похер, похерил, похерила, похерили, похеру, похрен, похрену, похуй, похуист, похуистка, похую, придурок, приебаться, припиздень, припизднутый, припиздюлина, пробзделся, проблядь, проеб, проебанка, проебать, промандеть, промудеть, пропизделся, пропиздеть, пропиздячить, раздолбай, разхуячить, разъеб, разъеба, разъебай, разъебать, распиздай, распиздеться, распиздяй, распиздяйство, распроеть, сволота, сволочь, сговнять, секель, серун, серька, сестроеб, сикель, сила, сирать, сирывать, соси, спиздел, спиздеть, спиздил, спиздила, спиздили, спиздит, спиздить, срака, сраку, сраный, сранье, срать, срун, ссака, ссышь, стерва, страхопиздище, сука, суки, суходрочка, сучара, сучий, сучка, сучко, сучонок, сучье, сцание, сцать, сцука, сцуки, сцуконах, сцуль, сцыха, сцышь, съебаться, сыкун, трахае6, трахаеб, трахаёб, трахатель, ублюдок, уебать, уёбища, уебище, уёбище, уебищное, уёбищное, уебк, уебки, уёбки, уебок, уёбок, урюк, усраться, ушлепок, х_у_я_р_а, хyё, хyй, хyйня, хамло, хер, херня, херовато, херовина, херовый, хитровыебанный, хитрожопый, хуeм, хуе, хуё, хуевато, хуёвенький, хуевина, хуево, хуевый, хуёвый, хуек, хуёк, хуел, хуем, хуенч, хуеныш, хуенький, хуеплет, хуеплёт, хуепромышленник, хуерик, хуерыло, хуесос, хуесоска, хуета, хуетень, хуею, хуи, хуй, хуйком, хуйло, хуйня, хуйрик, хуище, хуля, хую, хуюл, хуя, хуяк, хуякать, хуякнуть, хуяра, хуясе, хуячить, целка, чмо, чмошник, чмырь, шалава, шалавой, шараёбиться, шлюха, шлюхой, шлюшка, ябывает');
 window.s_eng = [' ', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 window.s_rus = listToArray(' ,а,б,в,г,д,е,ё,ж,з,и,й,к,л,м,н,о,п,р,с,т,у,ф,х,ц,ч,ш,щ,ъ,ы,ь,э,ю,я');
 var color = "";
 style.addRule(".post_type_oppost","border-radius:3px");
-var stil = "font-size:50px;font-weight:bold;color:#7CFC00;-webkit-text-stroke:.036em black";
 var text = "Thank you for using AntiBump!";
 //style.addRule(".kok","background-color:var(--theme_default_postbghighlight);");
 /*style.addRule("@keyframes kzk","0%{background-color:var(--theme_default_postbghighlight)}72%{background-color:var(--theme_default_postbghighlight)}100%{background-color:var(--theme_default_postbg)}");*/
@@ -199,6 +246,63 @@ window.cid = [];
 window.startHref = "";
 window.scl = "";
 window.lastn = -1;
+//style.addRule('.turnmeoff','display:inline-block');
+if (fasthideallow){
+$qa('input.turnmeoff').forEach((el)=>{el.id="hide"})
+window.scrollcb_array.push(()=>{$qa('input.turnmeoff').forEach((el)=>{
+    el.style.display = "inline-block";
+    el.title = "Нажми, чтобы скрыть";
+    el.onclick = (e) => {
+        var fat = e.toElement;
+        var isThread = fat.$p(3).className.indexOf('thread__post') >= 0 ? false : true;
+        var chkbx = $cr('input');
+        fat.checked = false;
+        chkbx.type = "checkbox";
+        chkbx.style.marginLeft = "3px";
+        chkbx.id = "show"
+        chkbx.onclick = el.onclick;
+        chkbx.checked = true;
+        if (isThread) {
+            if (fat.id == "hide") {
+                var br = $cr('br')
+                var lbl = $cr('label');
+                var num = fat.$p(2).getAttribute('data-num');
+                lbl.innerText = " Скрыт тред №"+num+" - "+pretext(fat.$p(2).$q('article').innerText); lbl.id = 'show'; //lbl.onclick = el.onclick;
+                lbl.className="d"+window.skr;
+                var hr = $cr('hr')
+                hr.className = "d"+window.skr;
+                br.className = "d"+window.skr;
+                chkbx.className = "d"+window.skr++;
+                fat.$p(4).before(chkbx,lbl,br,hr);
+                fat.$p(4).style.display = "none";
+            }
+            else if (fat.id == "show") {
+                var che = fat.className;
+                fat.remove();
+                $q('form#posts-form').$q('hr.'+che).remove();
+                $q('form#posts-form').$q('label.'+che).remove();
+                $q('form#posts-form').$q('br.'+che).remove();
+                el.$p(4).style.display = "block";
+
+            }
+        }
+        else {
+            if (fat.id == 'hide') {
+                fat.$p(2).$q('article').style.display = 'none';
+                try {fat.$p(2).$q('div.post__images').style.display = 'none';}catch(e){}
+                fat.id = "show";
+                fat.checked = true;
+            }
+            else if (fat.id == 'show') {
+                fat.$p(2).$q('article').style.display = "";
+                try{fat.$p(2).$q('div.post__images').style.display = '';}catch(e){}
+                fat.id = "hide";
+                fat.checked = false;
+            }
+        }
+    }
+})})}
+window.scrollcb_array[window.scrollcb_array.length-1]()
 for (var i = 0; i < window.location.href.length; i++) {
     var u = window.location.href;
     if (u[i] != '#') {
@@ -208,19 +312,6 @@ for (var i = 0; i < window.location.href.length; i++) {
 }
 d0k = d1k = "";
 if (dook) {
-    /*var posts = document.querySelectorAll('.thread__post'); __OLD VERSION__
-        for (var i = 0;i<posts.length;i++) {
-            var message = posts[i].querySelector('article').innerText.toLowerCase();
-            if (message.length<5) {
-                var dik = message.indexOf("бамп");
-                var dok = message.indexOf("bump");
-                var duk = message.indexOf("sage");
-                var dak = message.indexOf("сажа");
-                if (dik>=0|| dok>=0 || duk>=0||dak>=0) {
-                    posts[i].remove();
-                }
-            }
-        }*/
     var /*let*/them_cum = document.getElementsByClassName('post__message');
     var post = document.querySelectorAll('.post__anon');
     var id = document.querySelectorAll('.postbtn-reply-href');
@@ -336,20 +427,34 @@ var slovars = [];
 for (var i = 0; i < Optslovars.length;i++) {
     slovars[Optslovars[i].id] = window[Optslovars[i].id];
 }
-
+//создание нового словаря тут
+window.s_bum = jalil; // где jalil - массив слов (обычный массив либо через listToArray (см ниже.))
+var slovarBum = $cr('option'); slovarBum.value = "s_bum"; slovarBum.innerText = "бамп";//slovarBum.id = "s_bum";
+Optslovars.push(slovarBum);
+// словарь шиза
+window.s_rys = listToArray(" ноль, целковый, полушка, четвертушка, осьмушка, подувичок, медичок, серебрячок, золотничок, девятичок, десятичок");
+window.s_shiz = listToArray(" ноль, целковый, чекушка, порнушка, пердушка, засирушка, жучок, мудачок, хуй на воротничок, дурачок");
+var slovarRys = newOption('s_rys',"Словарь Древнего Руса");
+var slovarShiz = newOption('s_shiz',"Словарь Древнего Шиза");
+Optslovars.push(slovarRys,slovarShiz);
+//закончено
 cmbbox.append(...Optslovars);
 cmbbox.value = getCookie('slov');
-
+// как работает listToArray - пример использования
+//var s_slo = listToArray("ноль,целковый,полушка,четвертушка,осьмушка,пудовичок,медячок,хуй за воротничок,итакдалее")
+// s_slo == ['ноль','целковый','полушка','четвертушка','осьмушка','пудовичок','медячок','хуй за воротничок','итакдалее'] - вернет true
 
 
 t.innerHTML = dakk;
 
-antidoskbnner.type = glowrand.type = antiplashque.type = "checkbox";
-try {
-    antiplashque.checked = JSON.parse(getCookie('antiplashque'));
-    glowrand.checked = JSON.parse(getCookie('glowrand'));
-    antidoskbnner.checked = JSON.parse(getCookie('adskbn'));
-}catch(E){}
+al.type = antidoskbnner.type = glowrand.type = antiplashque.type = rollbuttonCheckBox.type = fasthide.type = "checkbox";
+
+try{antiplashque.checked = JSON.parse(getCookie('antiplashque'));}catch(E){console.warn(E);setCookie('antiplashque','true',30)};
+try{glowrand.checked = JSON.parse(getCookie('glowrand'));}catch(E){console.warn(E);setCookie('glowrand','false',30)};
+try{antidoskbnner.checked = JSON.parse(getCookie('adskbn'));}catch(E){console.warn(E);setCookie('adskbn','false',30)};
+try{al.checked = JSON.parse(getCookie('wipelinks'));}catch(E){console.warn(E);setCookie('wipelinks','true',30)};
+try{rollbuttonCheckBox.checked = JSON.parse(getCookie('rollbutton'))}catch(E){console.warn(E);setCookie('rollbutton','false',30);}
+try{fasthide.checked = JSON.parse(getCookie('fasthide'))}catch(E){console.warn(E);setCookie('fasthide','true',30)}
 // cbox.type = "checkbox";
 cbox.type = "text";
 cbox.id = "abcbox";
@@ -363,6 +468,14 @@ p.innerHTML = "Заменять 'Аноним' на:";
 cbox.value = typeof(ctext)!=undefined?ctext:"бамп";
 sep.innerText = " | ";
 
+rollbutton.type = 'submit';
+rollbutton.value = 'Ролл';
+rollbutton.className = "button desktop";
+rollbutton.name = 'submit';
+rollqr.type = rollbutton.type;
+rollqr.value = rollbutton.value;
+rollqr.className = rollbutton.className;
+rollqr.name = rollbutton.name;
 nsfw.id = "nsfw";
 nsfw.innerHTML = "NSFW";
 //nsfw.href = "#";
@@ -378,15 +491,16 @@ edit.src = "https://i.imgur.com/EXSZdp9.png";
 edit.style = "width:16px;height:16px; user-select:none;position:absolute;vertical-align:text-top; visibility:hidden";
 editinp.style = "font-size:30px;outline:none;position:absolute;z-index:9999;color:var(--theme_default_link); visibility:hidden; border:none; border-bottom:1.5px solid;background:transparent;margin-top:1px;";
 editinp.style.left = $q('#title').offsetWidth.toString()+"px";
-editinp.placeholder = $q('#title').innerText;
+editinp.placeholder = oldtitle//$q('#title').innerText;
 //editinp.title = "Нажмите Enter для возвращения оригинального названия доски";
 p.style.cssText = "padding:.3em;"
 lab.innerHTML = "Настройки";
 cbox.maxlength = ""
 icon.src = "https://i.imgur.com/hsyzbF4.png";
-sett.style.cssText = "padding:3px;;user-select:none;;transition:.2s ease-in-out;position:fixed;background:var(--theme_default_postbg);width:15em;height:17em;opacity:0;visibility:hidden;left:40em; top:6em;border-radius:7px; border:1px solid rgba(0,0,0,.5);z-index:100;color:var(--theme_default_text);";
+sett.style.cssText = "padding:3px;;user-select:none;;transition:.2s ease-in-out;position:fixed;background:var(--theme_default_postbg);width:15em;height:22em;opacity:0;visibility:hidden;left:40em; top:6em;border-radius:7px; border:1px solid rgba(0,0,0,.5);z-index:100;color:var(--theme_default_text);";
 icon.style = ";transition:.3s ease-in-out;position:relative;width:1em;height:1em;vertical-align:middle;display:inline-block;margin-left:.6em;cursor:pointer;";
 p.id = lab.id = "abtext";
+
 lab.style = "text-align:center; position:relative; display:inline-block; left:4.1em;font-size:17px";
 icon.onclick = menu; function menu() {menuopen = !menuopen;var kak = sett.style.opacity == "1" ? "rotate(-60deg)" : "rotate(0deg)";sett.style.visibility = "visible";var ksk = sett.style.opacity == "1" ? "hidden" : "visible";var kok = sett.style.opacity == "1" ? "0" : "1"; sett.style.opacity = kok; icon.style.transform=kak; setTimeout(function() {sett.style.visibility = ksk},205)};
 t.style.cssText += ";transition:.2s ease-in-out;left:0px;position:relative;"+d1k;
@@ -477,7 +591,9 @@ koqs.appendChild(s);
 koqs.appendChild(t);
 
 window.wipe = function(a) {
-    var currslov = slovars[getCookie('slov')];
+    //var currslov = slovars[getCookie('slov')];
+    var currslov = window[cmbbox.childNodes[cmbbox.selectedIndex].value];
+    var allowLinks = JSON.parse(getCookie('wipelinks'));
     var sha = $q('#shampoo');
     var ulins = [];
     if ($q('#nex').checked){
@@ -486,7 +602,8 @@ window.wipe = function(a) {
         for(var e = 0; sha.value.length<5000;e++){
             sha.value += currslov[rand(0,currslov.length-1)];
         }
-        for(var ee = 0; ee < lin.length-1;ee++) {
+        if (allowLinks) {
+        for(var ee = 0; ee < 30;ee++) {
             if (ulins.indexOf(lin[ee].innerText)<0){
                 if (lin[ee].innerText.toLowerCase().indexOf('(op)')>=0) {
                     sha.value += lin[ee].innerText.reve().substring(4).reve();
@@ -494,7 +611,7 @@ window.wipe = function(a) {
                 else sha.value += lin[ee].innerText + " ";
                 ulins[ee] = lin[ee].innerText;
             }
-        }
+        }}
         sha.focus();
     } else {sha.value = "";}
 }
@@ -508,9 +625,21 @@ glowrand.onchange = function(e) {
     }
     else {setCookie('glowrand',anti)}
 }
+rollbuttonCheckBox.onchange = function() {
+	var c = getCookie('rollbutton');
+	if (JSON.parse(c)) {
+		setCookie('rollbutton','false',30);
+        rollqr.remove(); rollbutton.remove();
+	}
+	else if (!JSON.parse(c)) {
+		setCookie('rollbutton','true',30);
+        $q('input#e-mail').$p().prepend(rollbutton);
+        $q('input#qr-e-mail').$p().prepend(rollqr);
+	}
+}
 antiplashque.onchange = function() {
         if (this.checked == true) {
-            try {$q('section.mmm').forEach((el) => {el.remove()})} catch(e) {$q('section.mmm').remove();}
+            try {$qa('section.mmm').forEach((el) => {el.remove()})} catch(e) {$q('section.mmm').remove();}
             try {$q('div#plashque').remove();} catch(e){}
             setCookie('plashque','1');
             setCookie('antiplashque','true');
@@ -528,6 +657,23 @@ antidoskbnner.onchange = function() {
     else {
         $('div.logo').show();
         setCookie('adskbn','false',30);
+    }
+}
+al.onchange = function() {
+    if (this.checked) {
+        setCookie('wipelinks','true',30);
+    }
+    else {
+        setCookie('wipelinks','false',30);
+    }
+}
+fasthide.onchange = function() {
+    var d = JSON.parse(getCookie('fasthide'));
+    if (d) {
+        setCookie('fasthide','false',30);
+    }
+    else {
+        setCookie('fasthide','true',30);
     }
 }
 edit.onclick = function() {
@@ -577,6 +723,14 @@ editinp.oninput = function(e) {
         editinp.style.width = ol+"px";
     }*/
 }
+rollbutton.onclick = doRoll
+function doRoll() {
+	var sh = $q('#shampoo');
+    var shq = $q('#qr-shampoo');
+	var roll = rolls[rand(0,rolls.length)];
+    sh.value = shq.value = roll;
+	//$q('form#postform').$q('input#submit[value=Отправить]').click();
+}
 editinp.onkeypress = function(e) {
     var board = getBoard()+"/";
     if (e.keyCode == 13) {
@@ -600,10 +754,10 @@ editinp.onkeypress = function(e) {
     }
 }
 document.onclick = function(e){
-    if ((e.toElement == sett || e.toElement == icon || e.toElement.parentElement == sett || e.toElement.parentElement.parentElement == sett)&& menuopen) {
+    try{if ((e.toElement == sett || e.toElement == icon || e.toElement.parentElement == sett || e.toElement.parentElement.parentElement == sett)&& menuopen) {
 
     }
-    else if (menuopen) {menu(); menuopen = false;}
+    else if (menuopen) {menu(); menuopen = false;}}catch(E){}
 }
 $q('h1.boardname').onmouseenter = function() {edit.style.visibility = "visible"};
 $q('h1.boardname').onmouseleave = function() {edit.style.visibility = "hidden"};
@@ -635,6 +789,10 @@ sett.append(cmbbox);
 nsfw.after(sep);
 sep.after(rndd);
 var spr = "";
+if (allowRollbutton) {
+	$q('input#e-mail').$p().prepend(rollbutton);
+    $q('input#qr-e-mail').$p().prepend(rollqr);
+}
 var lch = parseInt(bmps.toString()[bmps.toString.length-1]);
 if (lch>1 && lch<5) {spr = "а";}
 else if (lch>5||lch==0) {spr="ов";}
@@ -646,8 +804,13 @@ a.attr('for','sagecheckbox');
 window.$("label#dddeddd").attr('for','nex');
 window.$alert("Антибамп скрыл "+ bmps+" бамп"+spr);
 $q('#abcbox').after(" Словарь для вайпа:");
-cmbbox.after($cr("br"),antiplashque," Убирать баннеры 2чграма",$cr('br'));
+var abu_chlen = $cr('font'); abu_chlen.size = "1"; abu_chlen.className = 'spoiler'; abu_chlen.innerText = "абу сосет хуй";
+cmbbox.after($cr("br"),antiplashque," Убирать рекламу ",abu_chlen,$cr('br'));
 sett.append(glowrand," Плавная прокрутка при рандомном посте",$cr('br'));
-sett.append(antidoskbnner," Убирать баннеры других досок",$cr('br'));
+sett.append(antidoskbnner," Убирать баннеры других доск",$cr('br'));
+sett.append(al," Оставлять ссылки на посты при вайпе",$cr('br'));
+sett.append(rollbuttonCheckBox," Ролл-кнопка",$cr('br'));
+sett.append(fasthide," Быстрое скрытие",$cr('br'));
 $q('h1.boardname').appendChild(edit);
 $q('a#title').parentElement.append(editinp);
+console.log("%c--------",stil);
