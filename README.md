@@ -1,2 +1,2 @@
 # antiBUMP
-A simple userscript for tampermonkey to remove all messages on 2ch with "bump" for better look.
+Hides all messages with "BUMP" and adds new features on 2ch.
