@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         antiBUMP
 // @namespace    koq
-// @version      1.11
-// @description  Adds new features on 2ch.
+// @version      1.11.1
+// @description  Adds new cool features on 2ch.
 // @author       dik&dok
 // @match        *://2ch.hk/*/res/*
 // @match        *://2ch.*/*
@@ -302,7 +302,7 @@ function skrit(fat){
     chkbx.type = "checkbox";
     chkbx.style.marginLeft = "3px";
     chkbx.id = "show";
-    
+
     chkbx.checked = true;
     if (isThread) {
         if (fat.id == "hide") {
@@ -482,8 +482,8 @@ var slovarRus = $cr('option'); slovarRus.value = "s_rus"; slovarRus.innerText = 
 var slovarMat = $cr('option'); slovarMat.value = "s_mat"; slovarMat.innerText = "М*Т!!"; slovarMat.id = "s_mat"
 var Optslovars = [slovarEng,slovarRus,slovarMat];
 var slovars = [];
-for (var i = 0; i < Optslovars.length;i++) {
-    slovars[Optslovars[i].id] = window[Optslovars[i].id];
+for (var _i = 0; _i < Optslovars.length;_i++) {
+    slovars[Optslovars[_i].id] = window[Optslovars[_i].id];
 }
 //inb4
 window.s_inb = listToArray(" хохол, окатыш, либераха, соросёнок, самый умный, +15, а мне помогло, а у меня нет побочных эффектов, кац соболь навальный уже привились, запад строит козни, враги социалистического строя, когда вакцинация у хохлов, венесуэла уже купила, анало говнет, пфайзер-убивайзер корчит рожу, ни одна вакцина не прошла фазу III, покажи диплом вирусолога");
@@ -949,7 +949,7 @@ nsfw.after(sep);
 sep.after(rndd);
 rndd.after(sep2);
 sep2.after(downloadAllButton);
-var spr = "";
+spr = "";
 if (allowRollbutton) {
     $q('input#e-mail').$p().prepend(rollbutton);
     $q('input#qr-e-mail').$p().prepend(rollqr);
