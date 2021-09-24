@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         antiBUMP
 // @namespace    koq
-// @version      1.10.0
-// @description  BUMP OUT OF HERE. removes all messages with "BUMP" and adds new features on 2ch.
+// @version      1.11
+// @description  Adds new features on 2ch.
 // @author       dik&dok
 // @match        *://2ch.hk/*/res/*
 // @match        *://2ch.*/*
@@ -16,11 +16,37 @@
 // @updateUrl    https://raw.githubusercontent.com/lenchik-lox/antiBUMP/master/antiBUMP.user.js
 // ==/UserScript==
 
-
+(function() {
 'use strict';
+console.time('Antibump')
 if (typeof(window.board)=="undefined") return;
 var stil = "font-size:32px;font-weight:bold;color:#7CFC00;-webkit-text-stroke:.036em black";
 console.log("%c--------",stil)
+$show = function(el) {
+	var i = 0;
+	var showing = setInterval(function(){
+		if(!el || i++ > 8) {
+			clearInterval(showing);
+			return;
+		}
+
+		var s = el.style;
+		//s.opacity = i/10;
+		s.paddingTop = parseInt(s.paddingTop) + 1 + 'px';
+		s.paddingBottom = parseInt(s.paddingBottom) + 1 + 'px';
+	}, 35);
+}
+function getSpr(lch) {
+    var spr = "";
+    if (lch>1 && lch<5) {spr = "а";}
+    else if (lch>=5||lch==0) {spr="ов";}
+    return spr;
+}
+
+Array.prototype.last = function() {
+    return this[this.length-1];
+}
+NodeList.prototype.last = Array.prototype.last;
 function pretext(text) {
     if (typeof(text)=="undefined") return -1;
     var ret = "";
@@ -28,7 +54,7 @@ function pretext(text) {
         if (text[i]!=undefined){if (text[i]!='\n') ret += text[i];}
         else break;
     }
-    return ret + "...";
+    return ret + (text.length < 50 ? "" : "...");
 }
 Node.prototype.$qa = function(el) {
     return this.querySelectorAll(el);
@@ -44,7 +70,7 @@ Node.prototype.$p = function(c) {
     return _;
 }
 Node.prototype.$q = function(el) {
-	return this.querySelector(el);
+    return this.querySelector(el);
 }
 String.prototype.count = function(char) {
     return (this.match(new RegExp(char, "g")) || []).length;
@@ -57,6 +83,14 @@ function delCookie(key,path) {
 String.prototype.cut = function(num) {
     if (typeof(num)!="number"){throw("number needed")}
     return this.reve().substring(num).reve();
+}
+function $label(str,fr) {
+    var r = document.createElement('label');
+    var rnd = rand(0,1000).toString();
+    fr.id = rnd;
+    r.for = rnd;
+    r.innerText = str;
+    return r;
 }
 function listToArray(str) {
     var item = "";
@@ -78,9 +112,9 @@ function getBoard() {
     var tett = "";
     var tit = $q('#title').href;
     for(var i = 0; i < tit.length;i++) {
-        if (tit[i] == '/') {count++};
+        if (tit[i] == '/') {count++;}
         if (count ==3) {
-            tett+=tit[i]
+            tett+=tit[i];
         }
         else if (count>3) {
             return tett.substr(1);
@@ -114,7 +148,7 @@ String.prototype.reve = function() {
     var d = s.reverse();
     var v = d.join("");
     return v;
-}
+};
 window.torgb = function(hex) {
     var d = 0;
     if (typeof(hex) != "string") {throw "hex must be a string";}
@@ -123,14 +157,14 @@ window.torgb = function(hex) {
     var g = hex[2+d] + hex[3+d];
     var b = hex[4+d] + hex[5+d];
     return "rgb("+parseInt(r,16).toString()+","+parseInt(g,16).toString()+","+parseInt(b,16).toString()+")";
-}
+};
 function getCookie(name) {
     var matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
     return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 function setCookie(key, value, days, path) {
     if(days==undefined)
-    {days=7}
+    {days=7;}
     var date=new Date();
     var pat = typeof(path)=="string" ? "path=/"+path.toString() : "path=/";
     date.setTime(date.getTime() + days*24*60*60*1000);
@@ -150,10 +184,10 @@ function $qa(el) {
     return document.querySelectorAll(el);
 }
 function newOption(id, name) {
-	var _opt = document.createElement('option');
-	_opt.id = _opt.value = id;
-	_opt.innerText = name;
-	return _opt;
+    var _opt = document.createElement('option');
+    _opt.id = _opt.value = id;
+    _opt.innerText = name;
+    return _opt;
 }
 if (!(getCookie("bb")=="true"|| getCookie("bb")=="false")) {
     setCookie("bb","true");
@@ -161,17 +195,17 @@ if (!(getCookie("bb")=="true"|| getCookie("bb")=="false")) {
 }
 var allowRollbutton, fasthideallow;
 try{if (JSON.parse(getCookie('antiplashque'))) {
-    try {$qa('.mmm').forEach((el) => {el.remove();})} catch(e) {$q('.mmm').remove();console.warn(e)}
-    try {$q('div#plashque').remove();} catch(e){;console.warn("plashque not found")}
+    try {$qa('.mmm').forEach((el) => {el.remove();})} catch(e) {$q('.mmm').remove();console.warn(e);}
+    try {$q('div#plashque').remove();} catch(e){console.warn("plashque not found");}
     setCookie('plashque','1');
     setCookie('antiplashque','true');
-}}catch(e){console.warn("setted 'antiplashque' to false due to "+e);setCookie('antiplashque','false');console.warn(e)};
+}}catch(e){console.warn("setted 'antiplashque' to false due to "+e);setCookie('antiplashque','false');console.warn(e);}
 try{if (JSON.parse(getCookie('adskbn'))){$('div.logo').hide();}}catch(e){console.warn("setted 'antidoskbanner' to false due to "+e);setCookie('adskbn','false')}
-try{var d = JSON.parse(getCookie('glowrand'));}catch(e){console.warn("setted 'glowrand' to false due to "+e);setCookie('glowrand','false')};
-try{allowRollbutton = JSON.parse(getCookie('rollbutton'));}catch(e){console.warn("setted 'rollbutton' to true due to "+e);setCookie('rollbutton','true'); allowRollbutton = true;};
+try{var d = JSON.parse(getCookie('glowrand'));}catch(e){console.warn("setted 'glowrand' to false due to "+e);setCookie('glowrand','false')}
+try{allowRollbutton = JSON.parse(getCookie('rollbutton'));}catch(e){console.warn("setted 'rollbutton' to true due to "+e);setCookie('rollbutton','true'); allowRollbutton = true;}
 try{fasthideallow=JSON.parse(getCookie('fasthide'));}catch(e){console.warn("setted 'fasthide' to true due to "+e);setCookie('fasthide','true',30);fasthideallow=true;}
 if (getCookie('slov') == undefined) {
-	setCookie('slov','s_eng',30);
+    setCookie('slov','s_eng',30);
 }
 
 var oldtitle = $q('#title').innerText;
@@ -195,15 +229,16 @@ window.$cr = $cr;
 window.rand = rand;
 window.skr = 0;
 //menu...
-var jalil = ["бамп","бап","бам","бапм","bamp","bump","b*mp","бабамп","бумп","бамп!","бамп?","бымп","бомп","бамж","бвмп","bmpp","бюмп","бамплю","ббмп","баамп","бамп!!","бамп!!!","bunp","блымп","бамп.","бемп"];
+var reg = /([bб])([аыийеэяуоeyuioa])*(([мm])([pп])|([bб])([аыийеэяуоeyuioa])([мm])|([pп]))/gi ///([bб])([аыийеэяуоeyuioa])(([мm])([pп])|([bб])([аыийеэяуоeyuioa])([мm])([pп]))/gi
+console.log(reg);
+var jalil = ["бамп","бап","бам","бапм","bamp","bump","b*mp","бабамп","бумп","бамп!","бамп?","бымп","бомп","бамж","бвмп","bmpp","бюмп","бамплю","ббмп","баамп","бамп!!","бамп!!!","bunp","блымп","бамп.","бемп",
+             "хуямп","пумб", "bimp","бибип"];
 //window.ss = jalil;
 var dakk = jalil[rand(0,jalil.length-1)];
 var style = document.styleSheets[0];
-dakk = dakk[0].toUpperCase()+dakk.substring(1,dakk.length)
+dakk = dakk[0].toUpperCase()+dakk.substring(1,dakk.length);
 // jalil.push("1","2","3","4","5","6","7","8","9","0");
 var ctext = getCookie("bbst")!=undefined ? decodeURIComponent(getCookie("bbst")) : "бамп";
-var rolls = listToArray('ролл,рулль,руль,суши,roll,hjkk,R_O_L_L,Roll,Ролл.');
-console.log(rolls);
 var butt = $cr("button");
 var t = $cr("span");
 var m = $cr("span");
@@ -213,9 +248,12 @@ var s = $cr("span");
 var cbox = $cr("input");
 var cmbbox = $cr('select');
 var rollqr = $cr('input');
+var rollwind = $cr('div');
+var ekek = [];
 var al = $cr('input');
 var rollbutton = $cr('input');
 var rollbuttonCheckBox = $cr('input');
+var skmap = new Map();
 var editinp = $cr('input');
 var fasthide = $cr('input');
 var antidoskbnner = $cr('input');
@@ -223,7 +261,7 @@ var sett = $cr("div");
 var nsfw = $cr('a');
 var rndd = $cr('a');
 var edit = $cr('img');
-var glowrand = $cr('input')
+var glowrand = $cr('input');
 var lab = $cr("label");
 var nst = $cr('style');
 var icon = $cr("img");
@@ -231,11 +269,14 @@ var p = $cr('label');
 var editmode = false;
 var antiplashque = $cr('input');
 var sep = $cr('separator');
+var sep2 = $cr('separator');
+var downloadAllButton = $cr('a');
 window.s_mat = listToArray(' 6ля, 6лядь, 6лять, b3ъeб, cock, cunt, e6aль, ebal, eblan, eбaл, eбaть, eбyч, eбать, eбёт, eблантий, fuck, fucker, fucking, xyёв, xyй, xyя, xуе,xуй, xую, zaeb, zaebal, zaebali, zaebat, архипиздрит, ахуел, ахуеть, бздение, бздеть, бздех, бздецы, бздит, бздицы, бздло, бзднуть, бздун, бздунья, бздюха, бздюшка, бздюшко, бля, блябу, блябуду, бляд, бляди, блядина, блядище, блядки, блядовать, блядство, блядун, блядуны, блядунья, блядь, блядюга, блять, вафел, вафлёр, взъебка, взьебка, взьебывать, въеб, въебался, въебенн, въебусь, въебывать, выблядок, выблядыш, выеб, выебать, выебен, выебнулся, выебон, выебываться, выпердеть, высраться, выссаться, вьебен, гавно, гавнюк, гавнючка, гамно, гандон, гнид, гнида, гниды, говенка, говенный, говешка, говназия, говнецо, говнище, говно, говноед, говнолинк, говночист, говнюк, говнюха, говнядина, говняк, говняный, говнять, гондон, доебываться, долбоеб, долбоёб, долбоящер, дрисня, дрист, дристануть, дристать, дристун, дристуха, дрочелло, дрочена, дрочила, дрочилка, дрочистый, дрочить, дрочка, дрочун, е6ал, е6ут, еб твою мать, ёб твою мать, ёбaн, ебaть, ебyч, ебал, ебало, ебальник, ебан, ебанамать, ебанат, ебаная, ёбаная, ебанический, ебанный, ебанныйврот, ебаное, ебануть, ебануться, ёбаную, ебаный, ебанько, ебарь, ебат, ёбат, ебатория, ебать, ебать-копать, ебаться, ебашить, ебёна, ебет, ебёт, ебец, ебик, ебин, ебись, ебическая, ебки, ебла, еблан, ебливый, еблище, ебло, еблыст, ебля, ёбн, ебнуть, ебнуться, ебня, ебошить, ебская, ебский, ебтвоюмать, ебун, ебут, ебуч, ебуче, ебучее, ебучий, ебучим, ебущ, ебырь, елда, елдак, елдачить, жопа, жопу, заговнять, задрачивать, задристать, задрота, зае6, заё6, заеб, заёб, заеба, заебал, заебанец, заебастая, заебастый, заебать, заебаться, заебашить, заебистое, заёбистое, заебистые, заёбистые, заебистый, заёбистый, заебись, заебошить, заебываться, залуп, залупа, залупаться, залупить, залупиться, замудохаться, запиздячить, засерать, засерун, засеря, засирать, засрун, захуячить, заябестая, злоеб, злоебучая, злоебучее, злоебучий, ибанамат, ибонех, изговнять, изговняться, изъебнуться, ипать, ипаться, ипаццо, Какдвапальцаобоссать, конча, курва, курвятник, лох, лошарa, лошара, лошары, лошок, лярва, малафья, манда, мандавошек, мандавошка, мандавошки, мандей, мандень, мандеть, мандища, мандой, манду, мандюк, минет, минетчик, минетчица, млять, мокрощелка, мокрощёлка, мразь, мудak, мудaк, мудаг, мудак, муде, мудель, мудеть, муди, мудил, мудила, мудистый, мудня, мудоеб, мудозвон, мудоклюй, на хер, на хуй, набздел, набздеть, наговнять, надристать, надрочить, наебать, наебет, наебнуть, наебнуться, наебывать, напиздел, напиздели, напиздело, напиздили, насрать, настопиздить, нахер, нахрен, нахуй, нахуйник, не ебет, не ебёт, невротебучий, невъебенно, нехира, нехрен, Нехуй, нехуйственно, ниибацо, ниипацца, ниипаццо, ниипет, никуя, нихера, нихуя, обдристаться, обосранец, обосрать, обосцать, обосцаться, обсирать, объебос, обьебать обьебос, однохуйственно, опездал, опизде, опизденивающе, остоебенить, остопиздеть, отмудохать, отпиздить, отпиздячить, отпороть, отъебись, охуевательский, охуевать, охуевающий, охуел, охуенно, охуеньчик, охуеть, охуительно, охуительный, охуяньчик, охуячивать, охуячить, очкун, падла, падонки, падонок, паскуда, педерас, педик, педрик, педрила, педрилло, педрило, педрилы, пездень, пездит, пездишь, пездо, пездят, пердануть, пердеж, пердение, пердеть, пердильник, перднуть, пёрднуть, пердун, пердунец, пердунина, пердунья, пердуха, пердь, переёбок, пернуть, пёрнуть, пи3д, пи3де, пи3ду, пиzдец, пидар, пидарaс, пидарас, пидарасы, пидары, пидор, пидорасы, пидорка, пидорок, пидоры, пидрас, пизда, пиздануть, пиздануться, пиздарваньчик, пиздато, пиздатое, пиздатый, пизденка, пизденыш, пиздёныш, пиздеть, пиздец, пиздит, пиздить, пиздиться, пиздишь, пиздища, пиздище, пиздобол, пиздоболы, пиздобратия, пиздоватая, пиздоватый, пиздолиз, пиздонутые, пиздорванец, пиздорванка, пиздострадатель, пизду, пиздуй, пиздун, пиздунья, пизды, пиздюга, пиздюк, пиздюлина, пиздюля, пиздят, пиздячить, писбшки, писька, писькострадатель, писюн, писюшка, по хуй, по хую, подговнять, подонки, подонок, подъебнуть, подъебнуться, поебать, поебень, поёбываает, поскуда, посрать, потаскуха, потаскушка, похер, похерил, похерила, похерили, похеру, похрен, похрену, похуй, похуист, похуистка, похую, придурок, приебаться, припиздень, припизднутый, припиздюлина, пробзделся, проблядь, проеб, проебанка, проебать, промандеть, промудеть, пропизделся, пропиздеть, пропиздячить, раздолбай, разхуячить, разъеб, разъеба, разъебай, разъебать, распиздай, распиздеться, распиздяй, распиздяйство, распроеть, сволота, сволочь, сговнять, секель, серун, серька, сестроеб, сикель, сила, сирать, сирывать, соси, спиздел, спиздеть, спиздил, спиздила, спиздили, спиздит, спиздить, срака, сраку, сраный, сранье, срать, срун, ссака, ссышь, стерва, страхопиздище, сука, суки, суходрочка, сучара, сучий, сучка, сучко, сучонок, сучье, сцание, сцать, сцука, сцуки, сцуконах, сцуль, сцыха, сцышь, съебаться, сыкун, трахае6, трахаеб, трахаёб, трахатель, ублюдок, уебать, уёбища, уебище, уёбище, уебищное, уёбищное, уебк, уебки, уёбки, уебок, уёбок, урюк, усраться, ушлепок, х_у_я_р_а, хyё, хyй, хyйня, хамло, хер, херня, херовато, херовина, херовый, хитровыебанный, хитрожопый, хуeм, хуе, хуё, хуевато, хуёвенький, хуевина, хуево, хуевый, хуёвый, хуек, хуёк, хуел, хуем, хуенч, хуеныш, хуенький, хуеплет, хуеплёт, хуепромышленник, хуерик, хуерыло, хуесос, хуесоска, хуета, хуетень, хуею, хуи, хуй, хуйком, хуйло, хуйня, хуйрик, хуище, хуля, хую, хуюл, хуя, хуяк, хуякать, хуякнуть, хуяра, хуясе, хуячить, целка, чмо, чмошник, чмырь, шалава, шалавой, шараёбиться, шлюха, шлюхой, шлюшка, ябывает');
 window.s_eng = [' ', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 window.s_rus = listToArray(' ,а,б,в,г,д,е,ё,ж,з,и,й,к,л,м,н,о,п,р,с,т,у,ф,х,ц,ч,ш,щ,ъ,ы,ь,э,ю,я');
 var color = "";
 style.addRule(".post_type_oppost","border-radius:3px");
+style.addRule("@keyframes raduga","0%{border-left:7px solid red;}28%{border-left:7px solid orange;}42%{border-left:7px solid yellow}56%{border-left:7px solid lime}70%{border-left:7px solid cyan}84%{border-left:7px solid blue}94%{border-left:7px solid violet}100%{border-left:7px solid red}");
 var text = "Thank you for using AntiBump!";
 //style.addRule(".kok","background-color:var(--theme_default_postbghighlight);");
 /*style.addRule("@keyframes kzk","0%{background-color:var(--theme_default_postbghighlight)}72%{background-color:var(--theme_default_postbghighlight)}100%{background-color:var(--theme_default_postbg)}");*/
@@ -246,61 +287,76 @@ window.cid = [];
 window.startHref = "";
 window.scl = "";
 window.lastn = -1;
+
+(async ()=>{$qa('a.post-reply-link').forEach(el=>{el.href="#"+el.getAttribute('data-num');});})();/*
+(async ()=>{$qa('a.post-reply-link').forEach(el=>{el.onclick=()=>{console.log('e');var toel = $qa('div.thread__post, div.thread__oppost').forEach((sel)=>{try{if(sel.children[0].getAttribute('data-num') ==el.getAttribute('data-num')){return sel;throw "ex";}}catch(e){console.log(sel)}});toel.scrollIntoViewIfNeeded({behavior:'smooth',block:'center'})}})})();
+*/
+
 //style.addRule('.turnmeoff','display:inline-block');
+function skrit(fat){
+    if (!fat.id)
+        fat = fat.toElement;
+    var isThread = fat.$p(3).className.indexOf('thread__post') >= 0 ? false : true;
+    var chkbx = $cr('input');
+    fat.checked = false;
+    chkbx.type = "checkbox";
+    chkbx.style.marginLeft = "3px";
+    chkbx.id = "show";
+    
+    chkbx.checked = true;
+    if (isThread) {
+        if (fat.id == "hide") {
+            var br = $cr('br');
+            var lbl = $cr('label');
+            var num = fat.$p(2).getAttribute('data-num');
+            lbl.innerText = " Скрыт тред №"+num+" - "+pretext(fat.$p(2).$q('article').innerText); lbl.id = 'show'; //lbl.onclick = el.onclick;
+            lbl.className="d"+window.skr;
+            var hr = $cr('hr');
+            hr.className = "d"+window.skr;
+            br.className = "d"+window.skr;
+            chkbx.className = "d"+window.skr;
+            skmap.set('d'+window.skr++,num);
+            chkbx.onclick = () => {skrit(chkbx)};
+            fat.$p(4).before(chkbx,lbl,br,hr);
+            fat.$p(4).style.display = "none";
+
+        }
+        else if (fat.id == "show") {
+            var che = fat.className;
+            var postnum = skmap.get(che);
+            fat.remove();
+            $q('#posts-form').$q('hr.'+che).remove();
+            $q('#posts-form').$q('label.'+che).remove();
+            $q('#posts-form').$q('br.'+che).remove();
+            $q('input.turnmeoff[value="'+postnum+'"]').$p(4).style.display = "block";
+
+        }
+    }
+    else {
+        if (fat.id == 'hide') {
+            fat.$p(2).$q('article').style.display = 'none';
+            try {fat.$p(2).$q('div.post__images').style.display = 'none';}catch(e){}
+            fat.id = "show";
+            fat.checked = true;
+        }
+        else if (fat.id == 'show') {
+            fat.$p(2).$q('article').style.display = "block";
+            try{fat.$p(2).$q('div.post__images').style.display = 'block';}catch(e){}
+            fat.id = "hide";
+            fat.checked = false;
+        }
+    }
+}
+window.skrit = skrit;
 if (fasthideallow){
-$qa('input.turnmeoff').forEach((el)=>{el.id="hide"})
+$qa('input.turnmeoff').forEach((el)=>{el.id="hide";});
 window.scrollcb_array.push(()=>{$qa('input.turnmeoff').forEach((el)=>{
     el.style.display = "inline-block";
     el.title = "Нажми, чтобы скрыть";
-    el.onclick = (e) => {
-        var fat = e.toElement;
-        var isThread = fat.$p(3).className.indexOf('thread__post') >= 0 ? false : true;
-        var chkbx = $cr('input');
-        fat.checked = false;
-        chkbx.type = "checkbox";
-        chkbx.style.marginLeft = "3px";
-        chkbx.id = "show"
-        chkbx.onclick = el.onclick;
-        chkbx.checked = true;
-        if (isThread) {
-            if (fat.id == "hide") {
-                var br = $cr('br')
-                var lbl = $cr('label');
-                var num = fat.$p(2).getAttribute('data-num');
-                lbl.innerText = " Скрыт тред №"+num+" - "+pretext(fat.$p(2).$q('article').innerText); lbl.id = 'show'; //lbl.onclick = el.onclick;
-                lbl.className="d"+window.skr;
-                var hr = $cr('hr')
-                hr.className = "d"+window.skr;
-                br.className = "d"+window.skr;
-                chkbx.className = "d"+window.skr++;
-                fat.$p(4).before(chkbx,lbl,br,hr);
-                fat.$p(4).style.display = "none";
-            }
-            else if (fat.id == "show") {
-                var che = fat.className;
-                fat.remove();
-                $q('form#posts-form').$q('hr.'+che).remove();
-                $q('form#posts-form').$q('label.'+che).remove();
-                $q('form#posts-form').$q('br.'+che).remove();
-                el.$p(4).style.display = "block";
-
-            }
-        }
-        else {
-            if (fat.id == 'hide') {
-                fat.$p(2).$q('article').style.display = 'none';
-                try {fat.$p(2).$q('div.post__images').style.display = 'none';}catch(e){}
-                fat.id = "show";
-                fat.checked = true;
-            }
-            else if (fat.id == 'show') {
-                fat.$p(2).$q('article').style.display = "";
-                try{fat.$p(2).$q('div.post__images').style.display = '';}catch(e){}
-                fat.id = "hide";
-                fat.checked = false;
-            }
-        }
-    }
+    el.onclick = () =>{skrit(el)};
+    el.name = "";
+    if (!el.id)
+        el.id = "hide";
 })})}
 window.scrollcb_array[window.scrollcb_array.length-1]()
 for (var i = 0; i < window.location.href.length; i++) {
@@ -311,9 +367,10 @@ for (var i = 0; i < window.location.href.length; i++) {
     else {break;}
 }
 d0k = d1k = "";
+(async () => {
 if (dook) {
     var /*let*/them_cum = document.getElementsByClassName('post__message');
-    var post = document.querySelectorAll('.post__anon');
+    var post = document.querySelectorAll('span.post__anon, a.post__email[href="mailto:sage"');
     var id = document.querySelectorAll('.postbtn-reply-href');
     var d = 0;
     var mode = (getCookie("bbst") == "true");
@@ -347,36 +404,36 @@ if (dook) {
             if (mes.className.indexOf("post_type_replied")>=0 || mes.className.indexOf("post_type_watched")>=0) {
                 mes.style.borderRight = k+"px solid "+color;
             }
-            else {mes.style.borderLeft = k+"px solid "+color;}
+            else {
+                if (k == 7) {
+                    mes.style.animation = "raduga 5s ease-in-out infinite";
+                }
+                else {
+                    mes.style.borderLeft = k+"px solid "+color;
+                }
+            }
         }
         //console.log("kok" + revid);
 
         //d--;
         for (var xXx_nagibator666_xXx = 0; xXx_nagibator666_xXx<jalil.length;xXx_nagibator666_xXx++) {
-            try
-            {
-                if(them_cum[lublu_karandashi].parentElement.parentElement.querySelector('.post__email').innerText == "Аноним")
-                {
-                    d++
-                };
-            }
-            catch(e) {}
-            var bumps = them_cum[lublu_karandashi].innerText.toLowerCase().indexOf(jalil[xXx_nagibator666_xXx]);
-            var lbumps = them_cum[lublu_karandashi].innerText.toLowerCase().lastIndexOf(jalil[xXx_nagibator666_xXx])
-            if (bumps>=0 && (them_cum[lublu_karandashi].innerText.length<6||them_cum[lublu_karandashi].innerText.toLowerCase().indexOf(">>")>=0&&them_cum[lublu_karandashi].innerText.length<8||lbumps<6))
+            var bumps = -1;//them_cum[lublu_karandashi].innerText.toLowerCase().indexOf(jalil[xXx_nagibator666_xXx]);
+            var lbumps = them_cum[lublu_karandashi].innerText.toLowerCase().lastIndexOf(jalil[xXx_nagibator666_xXx]);
+            if ((bumps>=0||them_cum[lublu_karandashi].innerText.match(reg)?.length>0) && (them_cum[lublu_karandashi].innerText.length<10||(them_cum[lublu_karandashi].innerText.toLowerCase().indexOf(">>")>=0&&them_cum[lublu_karandashi].innerText.length<8)))
             {
                 them_cum[lublu_karandashi].style.display = 'none';
+                 ekek.push(them_cum[lublu_karandashi].$p(2).$q('.turnmeoff'));
                 bmps++;
                 try{try
                 {
-                    post[lublu_karandashi+d].innerText = ctext;
+                    post[lublu_karandashi].innerText = ctext;
                     console.log("BUMP DETECTED AT "+lublu_karandashi);
                 }
                     catch(e)
                     {
                         them_cum[lublu_karandashi].parentElement.parentElement.querySelector('.post__email').innerText = "бамп";
                     }}catch(e){}
-                continue;
+                break;
             }
         }
         //}
@@ -388,6 +445,7 @@ else if (!dook) {
     //d0k="";d2k = "left:-14px;";d3k="background:#FF972F;";d1k = "text-decoration:line-through";
     s.style+="left:30px;"; m.style+="background:orange;"; d2k = "left:-28px;"; d3k = "background:#9D9D9D;"; d1k = "text-decoration:none";
 }
+})();
 //
 var kek = [];
 for (var ksux = 0;ksux<document.querySelectorAll('.spoiler').length;ksux++) {
@@ -421,12 +479,16 @@ cmbbox.name = "slovar";
 
 var slovarEng = $cr('option'); slovarEng.value = "s_eng"; slovarEng.innerText = "Английские буквы"; slovarEng.id = "s_eng";
 var slovarRus = $cr('option'); slovarRus.value = "s_rus"; slovarRus.innerText = "Русские буквы"; slovarRus.id = "s_rus";
-var slovarMat = $cr('option'); slovarMat.value = "s_mat"; slovarMat.innerText = "Пиздатый словарик"; slovarMat.id = "s_mat"
+var slovarMat = $cr('option'); slovarMat.value = "s_mat"; slovarMat.innerText = "М*Т!!"; slovarMat.id = "s_mat"
 var Optslovars = [slovarEng,slovarRus,slovarMat];
 var slovars = [];
 for (var i = 0; i < Optslovars.length;i++) {
     slovars[Optslovars[i].id] = window[Optslovars[i].id];
 }
+//inb4
+window.s_inb = listToArray(" хохол, окатыш, либераха, соросёнок, самый умный, +15, а мне помогло, а у меня нет побочных эффектов, кац соболь навальный уже привились, запад строит козни, враги социалистического строя, когда вакцинация у хохлов, венесуэла уже купила, анало говнет, пфайзер-убивайзер корчит рожу, ни одна вакцина не прошла фазу III, покажи диплом вирусолога");
+var slovarInb = $cr('option'); slovarInb.value = "s_inb"; slovarInb.innerText = "inb";
+Optslovars.push(slovarInb);
 //создание нового словаря тут
 window.s_bum = jalil; // где jalil - массив слов (обычный массив либо через listToArray (см ниже.))
 var slovarBum = $cr('option'); slovarBum.value = "s_bum"; slovarBum.innerText = "бамп";//slovarBum.id = "s_bum";
@@ -467,6 +529,9 @@ sett.id = "absett";
 p.innerHTML = "Заменять 'Аноним' на:";
 cbox.value = typeof(ctext)!=undefined?ctext:"бамп";
 sep.innerText = " | ";
+sep2.innerText = " | ";
+downloadAllButton.innerText = "Загрузить все картинки";
+downloadAllButton.onclick = downloadAll;
 
 rollbutton.type = 'submit';
 rollbutton.value = 'Ролл';
@@ -512,7 +577,24 @@ if (!dook) {
     cbox.style.userSelect = "none";
     cbox.style.color = "gray";
 }
-s.onclick = m.onclick = kak
+s.onclick = m.onclick = kak;
+
+$qa('.js-post-findimg').forEach((el)=>{
+    /*var svg = $cr('svg');
+    var path = $cr('path');
+    path.setAttribute('d',"M3 0v3h-2l3 3 3-3h-2v-3h-2zm-3 7v1h8v-1h-8z");"M3 0v3h-2l3 3 3-3h-2v-3h-2zm-3 7v1h8v-1h-8z";
+    svg.setAttribute('xmlns', "http://www.w3.org/2000/svg");
+    svg.className = "icon desktop";
+    svg.append(path);
+    svg.onclick = downloadPic;
+    svg.style.marginRight = "2px";*/
+    var img = $cr('img');
+    img.onclick = downloadPic;
+    img.className = "icon desktop ab-download"
+    img.style.cssText = "background:url('https://svgshare.com/i/QF9.svg') no-repeat var(--theme_default_icon); margin-left:2px;";
+    el.after(img);
+})
+
 function kak() {
     if (getCookie("bb")=="true") {
         /*s.style += ";transition:.2s ease-in-out;border-radius:100%;vertical-align:middle;width:10px;height:10px;background:#EEEEEE;position:relative;display:inline-block;margin:-1px;cursor:pointer;left:-14px;";
@@ -569,10 +651,10 @@ function randomPost() {
     }
     var c = rand(1,window.cid.length-1);
     if (JSON.parse(getCookie('glowrand'))) {
-        window.cid[c].parentElement.parentElement.parentElement.scrollIntoView({behavior:'smooth', block:"center"});
+        window.cid[c].$p(3).scrollIntoView({behavior:'smooth', block:"center"});
     }
     else {
-        window.scrollTo(0,(window.cid[c].parentElement.parentElement.parentElement.offsetTop-window.screen.height/2)+250)
+        window.scrollTo(0,(window.cid[c].$p(3).offsetTop-window.screen.height/2)+250)
     }
     window.scl = window.cid[c].parentElement.parentElement.parentElement.className;
     //window.cid[c].parentElement.parentElement.parentElement.className += " kok";
@@ -583,14 +665,17 @@ var koqs = document.querySelectorAll('span.adminbar__cat')[1];
 /*var sepp = $cr('separator');
 sepp.innerText = " |";*/
 
-
+ekek.forEach((el)=> {
+    el.checked = true;
+    el.id = "show";
+});
 
 
 koqs.appendChild(m);
 koqs.appendChild(s);
 koqs.appendChild(t);
 
-window.wipe = function(a) {
+window.wipe = async function(a) {
     //var currslov = slovars[getCookie('slov')];
     var currslov = window[cmbbox.childNodes[cmbbox.selectedIndex].value];
     var allowLinks = JSON.parse(getCookie('wipelinks'));
@@ -626,16 +711,16 @@ glowrand.onchange = function(e) {
     else {setCookie('glowrand',anti)}
 }
 rollbuttonCheckBox.onchange = function() {
-	var c = getCookie('rollbutton');
-	if (JSON.parse(c)) {
-		setCookie('rollbutton','false',30);
+    var c = getCookie('rollbutton');
+    if (JSON.parse(c)) {
+        setCookie('rollbutton','false',30);
         rollqr.remove(); rollbutton.remove();
-	}
-	else if (!JSON.parse(c)) {
-		setCookie('rollbutton','true',30);
+    }
+    else if (!JSON.parse(c)) {
+        setCookie('rollbutton','true',30);
         $q('input#e-mail').$p().prepend(rollbutton);
         $q('input#qr-e-mail').$p().prepend(rollqr);
-	}
+    }
 }
 antiplashque.onchange = function() {
         if (this.checked == true) {
@@ -652,7 +737,7 @@ function antibnner() {
 antidoskbnner.onchange = function() {
     if (this.checked) {
         $('div.logo').hide();
-        setCookie('adskbn','true',30)
+        setCookie('adskbn','true',30);
     }
     else {
         $('div.logo').show();
@@ -675,6 +760,14 @@ fasthide.onchange = function() {
     else {
         setCookie('fasthide','true',30);
     }
+    $qa('input.turnmeoff').forEach((el)=>{
+        if (d) {
+            el.style.display = "none";
+        }
+        else {
+            el.style.display = "inline-block";
+        }
+    });
 }
 edit.onclick = function() {
     if (!editmode) {
@@ -723,14 +816,47 @@ editinp.oninput = function(e) {
         editinp.style.width = ol+"px";
     }*/
 }
-rollbutton.onclick = doRoll
+rollbutton.onclick = doRoll;
+rollqr.onclick = doRoll;
 function doRoll() {
-	var sh = $q('#shampoo');
+    var sh = $q('#shampoo');
     var shq = $q('#qr-shampoo');
-	var roll = rolls[rand(0,rolls.length)];
-    sh.value = shq.value = roll;
-	//$q('form#postform').$q('input#submit[value=Отправить]').click();
+    if ((sh.value.length+shq.value.length)>4)
+        sh.value = shq.value += "\nролл";
+    else
+        sh.value = shq.value = "ролл";
+    setTimeout(checkroll,5400);
+    //$q('form#postform').$q('input#submit[value=Отправить]').click();
 }
+async function checkroll() {
+    var kek = [];
+    $qa('.thread__post').forEach((el)=>{
+        if (el.children[0].className.indexOf('post_type_watched')>=0) {
+            kek.push(el);
+        }
+    })
+    console.log(kek.last().children[0].getAttribute('data-num'));
+    window.$alert(`ROLL: ${kek.last().children[0].getAttribute('data-num')}`);
+}
+            /*setTimeout(()=>{$qa('.post-reply-link').forEach((el)=>{
+                el.onmouseover = (s) => {
+                    setTimeout(()=>{
+                        var pinthis = $cr('label');
+                        pinthis.innerText = "Pin!";
+                        pinthis.onclick = (s) => {
+                            var copy = pinthis.$p(2).cloneNode(100);
+                            copy.id = "1";
+                            setTimeout(()=>{
+                                var th = pinthis.$p(3);
+                                th.appendChild(copy);
+                                console.log(copy)},0);
+                        }
+                        try{var prev = $q('.post_preview')
+                        var e = prev.$qa('span.post__detailpart').last().after(pinthis);
+                           }catch(e){console.log(e)}
+                    },100)
+                }
+            })},500)*/
 editinp.onkeypress = function(e) {
     var board = getBoard()+"/";
     if (e.keyCode == 13) {
@@ -758,6 +884,39 @@ document.onclick = function(e){
 
     }
     else if (menuopen) {menu(); menuopen = false;}}catch(E){}
+}
+function downloadPic(svg) {
+    var img = svg.target.$p(2).$q('a.post__image-link').$q('img');
+    var aDown = $cr('a');
+    aDown.href = img.getAttribute('data-src');
+    aDown.download = svg.target.$p().$q('a').title;
+    aDown.click();
+}
+function downloadAll() {
+    var w = window.w = window.open("about:blank","e",`
+        top=${screen.height*0.25},
+        left=${screen.width*0.25},
+        width=1024,
+        height=720,
+        menubar=no,
+        status=no,
+        location=no
+    `);
+    w.document.write("<span style='margin-left:5px;;position:relative;right:-580px;max-width:420px;display:block;'><br><i>что это?</i><br>копируете, добавляете в любой <a href='https://www.google.com/search?q=менеджер+загрузок'>менеджер загрузок</a>, качаете, profit<br><br><br><button onclick='copy()'>Скопировать</button></span>");
+    w.document.write("<script>function copy() {var e = document.querySelector(`textarea`);e.select();document.execCommand('copy');document.body.focus();document.querySelector(`button`).textContent = `Скопировано!`; setTimeout(()=>{document.querySelector(`button`).textContent = `Скопировать`;},1500)}</script>")
+    var wri = "";
+    w.document.write('<textarea rows="90" cols="80" style="top:-129px;position:relative;display:block;width:580px;">');
+    w.document.querySelector('body').style.margin = w.document.querySelector('body').style.padding = 0;
+    $qa('.post__file-preview').forEach((el)=>{
+        wri += ("https://2ch.hk/"+el.getAttribute('data-src')+'\n'); // костыль
+    })
+    w.document.write(wri+'</textarea>');
+}
+window.downloadAll = downloadAll;
+{
+ let e = $cr('style');
+    e.innerText = "img.ab-download {display:none !important}";
+    document.head.append(e);
 }
 $q('h1.boardname').onmouseenter = function() {edit.style.visibility = "visible"};
 $q('h1.boardname').onmouseleave = function() {edit.style.visibility = "hidden"};
@@ -788,29 +947,32 @@ sett.append(cmbbox);
 //nsfw.before(sepp);
 nsfw.after(sep);
 sep.after(rndd);
+rndd.after(sep2);
+sep2.after(downloadAllButton);
 var spr = "";
 if (allowRollbutton) {
-	$q('input#e-mail').$p().prepend(rollbutton);
+    $q('input#e-mail').$p().prepend(rollbutton);
     $q('input#qr-e-mail').$p().prepend(rollqr);
 }
-var lch = parseInt(bmps.toString()[bmps.toString.length-1]);
-if (lch>1 && lch<5) {spr = "а";}
-else if (lch>5||lch==0) {spr="ов";}
+var spr = getSpr(bmps);
 console.log("%c"+text,stil);
 var koq = window.$;
 var a = window.$('span[title="Don\'t bump the thread"]');
 a.attr('title',"САЖИ ПИДОРУ!");
 a.attr('for','sagecheckbox');
 window.$("label#dddeddd").attr('for','nex');
-window.$alert("Антибамп скрыл "+ bmps+" бамп"+spr);
+setTimeout(()=>window.$alert("Антибамп скрыл "+ bmps+" бамп"+spr),200);
 $q('#abcbox').after(" Словарь для вайпа:");
-var abu_chlen = $cr('font'); abu_chlen.size = "1"; abu_chlen.className = 'spoiler'; abu_chlen.innerText = "абу сосет хуй";
-cmbbox.after($cr("br"),antiplashque," Убирать рекламу ",abu_chlen,$cr('br'));
+var abu_chlen = $cr('font'); abu_chlen.size = "1"/*cm*/; abu_chlen.className = 'spoiler'; abu_chlen.innerText = "абу мартышка";
+cmbbox.after($cr("br"),antiplashque," Адблок",$cr('br'));
 sett.append(glowrand," Плавная прокрутка при рандомном посте",$cr('br'));
-sett.append(antidoskbnner," Убирать баннеры других доск",$cr('br'));
-sett.append(al," Оставлять ссылки на посты при вайпе",$cr('br'));
+sett.append(antidoskbnner,$label(" Убрать баннеры других досок",antidoskbnner),$cr('br'));
+sett.append(al," Ссылки на посты при вайпе",$cr('br'));
 sett.append(rollbuttonCheckBox," Ролл-кнопка",$cr('br'));
 sett.append(fasthide," Быстрое скрытие",$cr('br'));
+sett.append(abu_chlen)
 $q('h1.boardname').appendChild(edit);
 $q('a#title').parentElement.append(editinp);
+console.timeEnd('Antibump');
 console.log("%c--------",stil);
+}());
