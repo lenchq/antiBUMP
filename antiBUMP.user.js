@@ -1,28 +1,31 @@
 // ==UserScript==
 // @name         antiBUMP
 // @namespace    koq
-// @version      1.11.1
+// @version      1.11.2
 // @description  Adds new cool features on 2ch.
 // @author       dik&dok
-// @match        *://2ch.hk/*/res/*
-// @match        *://2ch.*/*
-// @match        *://2ch.*/*/res/*
-// @match        https://2ch.hk/*
-// @match        https://2ch.hk/*/res/*
+// @include      *://2ch.hk/*/res/*
+// @include      *://2ch.*/*
+// @include      *://2ch.*/*/res/*
+// @include      https://2ch.hk/*
+// @include      https://2ch.hk/*/res/*
 // @include      https://2ch.*/*
-// @match        https://2ch.*/*
-// @grant        none
+// @include      https://2ch.*/*
+// @grant        GM_xmlhttpRequest
+// @run-at       document-end
 // @downloadUrl  https://raw.githubusercontent.com/lenchik-lox/antiBUMP/master/antiBUMP.user.js
 // @updateUrl    https://raw.githubusercontent.com/lenchik-lox/antiBUMP/master/antiBUMP.user.js
 // ==/UserScript==
 
 (function() {
 'use strict';
+if (!window.board) {
+    window.board = getBoard();
+}
 console.time('Antibump')
-if (typeof(window.board)=="undefined") return;
 var stil = "font-size:32px;font-weight:bold;color:#7CFC00;-webkit-text-stroke:.036em black";
 console.log("%c--------",stil)
-$show = function(el) {
+var $show = function(el) {
 	var i = 0;
 	var showing = setInterval(function(){
 		if(!el || i++ > 8) {
@@ -77,7 +80,7 @@ String.prototype.count = function(char) {
 }
 function delCookie(key,path) {
     if (typeof(path)=="string") {path = "/"+path+"/";}
-    document.cookie = key + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT'+";"+path;
+    document.cookie = key + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT'+';'+path;
     return !getCookie(key);
 }
 String.prototype.cut = function(num) {
@@ -269,6 +272,7 @@ var p = $cr('label');
 var editmode = false;
 var antiplashque = $cr('input');
 var sep = $cr('separator');
+var isBoard = location.href.indexOf('res') ? true : false;
 var sep2 = $cr('separator');
 var downloadAllButton = $cr('a');
 window.s_mat = listToArray(' 6ля, 6лядь, 6лять, b3ъeб, cock, cunt, e6aль, ebal, eblan, eбaл, eбaть, eбyч, eбать, eбёт, eблантий, fuck, fucker, fucking, xyёв, xyй, xyя, xуе,xуй, xую, zaeb, zaebal, zaebali, zaebat, архипиздрит, ахуел, ахуеть, бздение, бздеть, бздех, бздецы, бздит, бздицы, бздло, бзднуть, бздун, бздунья, бздюха, бздюшка, бздюшко, бля, блябу, блябуду, бляд, бляди, блядина, блядище, блядки, блядовать, блядство, блядун, блядуны, блядунья, блядь, блядюга, блять, вафел, вафлёр, взъебка, взьебка, взьебывать, въеб, въебался, въебенн, въебусь, въебывать, выблядок, выблядыш, выеб, выебать, выебен, выебнулся, выебон, выебываться, выпердеть, высраться, выссаться, вьебен, гавно, гавнюк, гавнючка, гамно, гандон, гнид, гнида, гниды, говенка, говенный, говешка, говназия, говнецо, говнище, говно, говноед, говнолинк, говночист, говнюк, говнюха, говнядина, говняк, говняный, говнять, гондон, доебываться, долбоеб, долбоёб, долбоящер, дрисня, дрист, дристануть, дристать, дристун, дристуха, дрочелло, дрочена, дрочила, дрочилка, дрочистый, дрочить, дрочка, дрочун, е6ал, е6ут, еб твою мать, ёб твою мать, ёбaн, ебaть, ебyч, ебал, ебало, ебальник, ебан, ебанамать, ебанат, ебаная, ёбаная, ебанический, ебанный, ебанныйврот, ебаное, ебануть, ебануться, ёбаную, ебаный, ебанько, ебарь, ебат, ёбат, ебатория, ебать, ебать-копать, ебаться, ебашить, ебёна, ебет, ебёт, ебец, ебик, ебин, ебись, ебическая, ебки, ебла, еблан, ебливый, еблище, ебло, еблыст, ебля, ёбн, ебнуть, ебнуться, ебня, ебошить, ебская, ебский, ебтвоюмать, ебун, ебут, ебуч, ебуче, ебучее, ебучий, ебучим, ебущ, ебырь, елда, елдак, елдачить, жопа, жопу, заговнять, задрачивать, задристать, задрота, зае6, заё6, заеб, заёб, заеба, заебал, заебанец, заебастая, заебастый, заебать, заебаться, заебашить, заебистое, заёбистое, заебистые, заёбистые, заебистый, заёбистый, заебись, заебошить, заебываться, залуп, залупа, залупаться, залупить, залупиться, замудохаться, запиздячить, засерать, засерун, засеря, засирать, засрун, захуячить, заябестая, злоеб, злоебучая, злоебучее, злоебучий, ибанамат, ибонех, изговнять, изговняться, изъебнуться, ипать, ипаться, ипаццо, Какдвапальцаобоссать, конча, курва, курвятник, лох, лошарa, лошара, лошары, лошок, лярва, малафья, манда, мандавошек, мандавошка, мандавошки, мандей, мандень, мандеть, мандища, мандой, манду, мандюк, минет, минетчик, минетчица, млять, мокрощелка, мокрощёлка, мразь, мудak, мудaк, мудаг, мудак, муде, мудель, мудеть, муди, мудил, мудила, мудистый, мудня, мудоеб, мудозвон, мудоклюй, на хер, на хуй, набздел, набздеть, наговнять, надристать, надрочить, наебать, наебет, наебнуть, наебнуться, наебывать, напиздел, напиздели, напиздело, напиздили, насрать, настопиздить, нахер, нахрен, нахуй, нахуйник, не ебет, не ебёт, невротебучий, невъебенно, нехира, нехрен, Нехуй, нехуйственно, ниибацо, ниипацца, ниипаццо, ниипет, никуя, нихера, нихуя, обдристаться, обосранец, обосрать, обосцать, обосцаться, обсирать, объебос, обьебать обьебос, однохуйственно, опездал, опизде, опизденивающе, остоебенить, остопиздеть, отмудохать, отпиздить, отпиздячить, отпороть, отъебись, охуевательский, охуевать, охуевающий, охуел, охуенно, охуеньчик, охуеть, охуительно, охуительный, охуяньчик, охуячивать, охуячить, очкун, падла, падонки, падонок, паскуда, педерас, педик, педрик, педрила, педрилло, педрило, педрилы, пездень, пездит, пездишь, пездо, пездят, пердануть, пердеж, пердение, пердеть, пердильник, перднуть, пёрднуть, пердун, пердунец, пердунина, пердунья, пердуха, пердь, переёбок, пернуть, пёрнуть, пи3д, пи3де, пи3ду, пиzдец, пидар, пидарaс, пидарас, пидарасы, пидары, пидор, пидорасы, пидорка, пидорок, пидоры, пидрас, пизда, пиздануть, пиздануться, пиздарваньчик, пиздато, пиздатое, пиздатый, пизденка, пизденыш, пиздёныш, пиздеть, пиздец, пиздит, пиздить, пиздиться, пиздишь, пиздища, пиздище, пиздобол, пиздоболы, пиздобратия, пиздоватая, пиздоватый, пиздолиз, пиздонутые, пиздорванец, пиздорванка, пиздострадатель, пизду, пиздуй, пиздун, пиздунья, пизды, пиздюга, пиздюк, пиздюлина, пиздюля, пиздят, пиздячить, писбшки, писька, писькострадатель, писюн, писюшка, по хуй, по хую, подговнять, подонки, подонок, подъебнуть, подъебнуться, поебать, поебень, поёбываает, поскуда, посрать, потаскуха, потаскушка, похер, похерил, похерила, похерили, похеру, похрен, похрену, похуй, похуист, похуистка, похую, придурок, приебаться, припиздень, припизднутый, припиздюлина, пробзделся, проблядь, проеб, проебанка, проебать, промандеть, промудеть, пропизделся, пропиздеть, пропиздячить, раздолбай, разхуячить, разъеб, разъеба, разъебай, разъебать, распиздай, распиздеться, распиздяй, распиздяйство, распроеть, сволота, сволочь, сговнять, секель, серун, серька, сестроеб, сикель, сила, сирать, сирывать, соси, спиздел, спиздеть, спиздил, спиздила, спиздили, спиздит, спиздить, срака, сраку, сраный, сранье, срать, срун, ссака, ссышь, стерва, страхопиздище, сука, суки, суходрочка, сучара, сучий, сучка, сучко, сучонок, сучье, сцание, сцать, сцука, сцуки, сцуконах, сцуль, сцыха, сцышь, съебаться, сыкун, трахае6, трахаеб, трахаёб, трахатель, ублюдок, уебать, уёбища, уебище, уёбище, уебищное, уёбищное, уебк, уебки, уёбки, уебок, уёбок, урюк, усраться, ушлепок, х_у_я_р_а, хyё, хyй, хyйня, хамло, хер, херня, херовато, херовина, херовый, хитровыебанный, хитрожопый, хуeм, хуе, хуё, хуевато, хуёвенький, хуевина, хуево, хуевый, хуёвый, хуек, хуёк, хуел, хуем, хуенч, хуеныш, хуенький, хуеплет, хуеплёт, хуепромышленник, хуерик, хуерыло, хуесос, хуесоска, хуета, хуетень, хуею, хуи, хуй, хуйком, хуйло, хуйня, хуйрик, хуище, хуля, хую, хуюл, хуя, хуяк, хуякать, хуякнуть, хуяра, хуясе, хуячить, целка, чмо, чмошник, чмырь, шалава, шалавой, шараёбиться, шлюха, шлюхой, шлюшка, ябывает');
@@ -358,7 +362,7 @@ window.scrollcb_array.push(()=>{$qa('input.turnmeoff').forEach((el)=>{
     if (!el.id)
         el.id = "hide";
 })})}
-window.scrollcb_array[window.scrollcb_array.length-1]()
+try {window.scrollcb_array[window.scrollcb_array.length-1]()}catch(e){}
 for (var i = 0; i < window.location.href.length; i++) {
     var u = window.location.href;
     if (u[i] != '#') {
@@ -367,7 +371,7 @@ for (var i = 0; i < window.location.href.length; i++) {
     else {break;}
 }
 d0k = d1k = "";
-(async () => {
+async function antiB() {
 if (dook) {
     var /*let*/them_cum = document.getElementsByClassName('post__message');
     var post = document.querySelectorAll('span.post__anon, a.post__email[href="mailto:sage"');
@@ -445,7 +449,9 @@ else if (!dook) {
     //d0k="";d2k = "left:-14px;";d3k="background:#FF972F;";d1k = "text-decoration:line-through";
     s.style+="left:30px;"; m.style+="background:orange;"; d2k = "left:-28px;"; d3k = "background:#9D9D9D;"; d1k = "text-decoration:none";
 }
-})();
+};
+antiB();
+window.antiB = antiB;
 //
 var kek = [];
 for (var ksux = 0;ksux<document.querySelectorAll('.spoiler').length;ksux++) {
@@ -892,6 +898,33 @@ function downloadPic(svg) {
     aDown.download = svg.target.$p().$q('a').title;
     aDown.click();
 }
+function loadRefmap(e) {
+    var trg = e.currentTarget;
+    var threadNum;
+    try {threadNum = trg.children[0].getAttribute('data-num')}catch(e){threadNum =  e.toElement.getAttribute('data-num')};
+    GM_xmlhttpRequest({
+        method:"GET",
+        url:`/${window.board}/res/${threadNum}.json`,
+        nocache:true,
+        responseType:"json",
+        onload: createRefmap
+    })
+    trg.$q('.post__refmap').style.display = "block";
+    function createRefmap(resp) {
+        try{trg.$q('.post__refmap').innerHTML = "";}catch(e){}
+        for (var el of resp.response.threads[0].posts) {
+            if (el.parent != threadNum)
+                continue;
+            var ref = $cr('a');
+            ref.className = "post-reply-link";
+            ref.setAttribute('data-num',el.num);
+            ref.setAttribute('data-thread',threadNum);
+            ref.href = `/${resp.Board}/res/${threadNum}.html#${el.num}`;
+            ref.innerText = `>>${el.num} `;
+            trg.$q('.post__refmap').appendChild(ref);
+        }
+    }
+}
 function downloadAll() {
     var w = window.w = window.open("about:blank","e",`
         top=${screen.height*0.25},
@@ -918,9 +951,18 @@ window.downloadAll = downloadAll;
     e.innerText = "img.ab-download {display:none !important}";
     document.head.append(e);
 }
+//COPY LINK TO WEBM IF MOUSE UNDER WEBM
+(async () => {
+	document.oncopy = (e) => {
+		if (e.target.className.indexOf('post__file-webm')>=0) {
+			navigator.clipboard.writeText(e.target.$p(1).href)
+		}
+	}
+})();
+//
 $q('h1.boardname').onmouseenter = function() {edit.style.visibility = "visible"};
 $q('h1.boardname').onmouseleave = function() {edit.style.visibility = "hidden"};
-window.scrollcb_array.push(antibnner);
+try {window.scrollcb_array.push(antibnner);}catch(e){}
 var wb = $cr('div');
 var chx = $cr('input');
 var chhh = $cr('label');
@@ -954,16 +996,23 @@ if (allowRollbutton) {
     $q('input#e-mail').$p().prepend(rollbutton);
     $q('input#qr-e-mail').$p().prepend(rollqr);
 }
+/*if (isBoard) {
+    $qa('.thread__oppost').forEach(el=>{
+        el.addEventListener('mousedown',
+        loadRefmap,
+        false);
+    })
+}*/
 var spr = getSpr(bmps);
 console.log("%c"+text,stil);
 var koq = window.$;
-var a = window.$('span[title="Don\'t bump the thread"]');
-a.attr('title',"САЖИ ПИДОРУ!");
-a.attr('for','sagecheckbox');
-window.$("label#dddeddd").attr('for','nex');
+var a = $q('span[title="Don\'t bump the thread"]');
+a.setAttribute('title',"САЖИ!");
+a.setAttribute('for','sagecheckbox');
+$q("label#dddeddd").setAttribute('for','nex');
 setTimeout(()=>window.$alert("Антибамп скрыл "+ bmps+" бамп"+spr),200);
 $q('#abcbox').after(" Словарь для вайпа:");
-var abu_chlen = $cr('font'); abu_chlen.size = "1"/*cm*/; abu_chlen.className = 'spoiler'; abu_chlen.innerText = "абу мартышка";
+var abu_chlen = $cr('font'); abu_chlen.size = "1"/*cm*/; abu_chlen.className = 'spoiler'; abu_chlen.innerText = "абу гей(грязный)";
 cmbbox.after($cr("br"),antiplashque," Адблок",$cr('br'));
 sett.append(glowrand," Плавная прокрутка при рандомном посте",$cr('br'));
 sett.append(antidoskbnner,$label(" Убрать баннеры других досок",antidoskbnner),$cr('br'));
